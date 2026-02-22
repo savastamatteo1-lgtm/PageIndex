@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **FOUND-01**: System provides a Supabase document registry that stores document metadata, tree JSON structures, and embedding references with unique `doc_id` identifiers
 - [x] **FOUND-02**: System implements Italian legal metadata schema with fields: `doc_type`, `date`, `authority`, `ecli`, `gu_number`, `legal_area`, `parties`, `court_level`, `cross_references`, plus flexible JSONB for additional fields
 - [x] **FOUND-03**: System uses LiteLLM as provider-agnostic LLM abstraction layer supporting Gemini, OpenAI, Anthropic, and local models without code changes
-- [ ] **FOUND-04**: System provides a batch ingestion pipeline that processes PDFs through: tree indexing → metadata extraction → embedding generation → Supabase storage
+- [x] **FOUND-04**: System provides a batch ingestion pipeline that processes PDFs through: tree indexing → metadata extraction → embedding generation → Supabase storage
 - [ ] **FOUND-05**: System exposes a Python library API for programmatic integration (`ingest`, `search`, `retrieve` as core operations)
 
 ### Metadata Retrieval
@@ -23,7 +23,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Semantic Retrieval
 
-- [ ] **SEM-01**: System chunks documents using tree leaf nodes as natural boundaries and generates embeddings stored in pgvector
+- [x] **SEM-01**: System chunks documents using tree leaf nodes as natural boundaries and generates embeddings stored in pgvector
 - [ ] **SEM-02**: User can search documents by semantic similarity using a query embedding against stored document chunk embeddings
 - [ ] **SEM-03**: System computes DocScore per document using the formula `DocScore = (1/sqrt(N+1)) * sum(ChunkScore(n))` to aggregate chunk relevance
 
@@ -40,8 +40,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Ingestion Enrichment
 
-- [ ] **ENRICH-01**: System automatically extracts Italian legal metadata (ECLI, court, date, legal area, parties, document type) from document text during ingestion via LLM
-- [ ] **ENRICH-02**: System generates one-sentence LLM descriptions for each document during ingestion for description-based search
+- [x] **ENRICH-01**: System automatically extracts Italian legal metadata (ECLI, court, date, legal area, parties, document type) from document text during ingestion via LLM
+- [x] **ENRICH-02**: System generates one-sentence LLM descriptions for each document during ingestion for description-based search
 - [ ] **ENRICH-03**: User can search documents by comparing query against LLM-generated descriptions (description-based search strategy)
 
 ## v2 Requirements
@@ -81,12 +81,12 @@ Deferred to future release. Tracked but not in current roadmap.
 | FOUND-01 | Phase 1 | Complete |
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
-| FOUND-04 | Phase 2 | Pending |
+| FOUND-04 | Phase 2 | Complete |
 | FOUND-05 | Phase 5 | Pending |
 | META-01 | Phase 3 | Pending |
 | META-02 | Phase 3 | Pending |
 | META-03 | Phase 3 | Pending |
-| SEM-01 | Phase 2 | Pending |
+| SEM-01 | Phase 2 | Complete |
 | SEM-02 | Phase 3 | Pending |
 | SEM-03 | Phase 3 | Pending |
 | TREE-01 | Phase 3 | Pending |
@@ -94,8 +94,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | STRAT-01 | Phase 4 | Pending |
 | STRAT-02 | Phase 4 | Pending |
 | STRAT-03 | Phase 4 | Pending |
-| ENRICH-01 | Phase 2 | Pending |
-| ENRICH-02 | Phase 2 | Pending |
+| ENRICH-01 | Phase 2 | Complete |
+| ENRICH-02 | Phase 2 | Complete |
 | ENRICH-03 | Phase 3 | Pending |
 
 **Coverage:**
