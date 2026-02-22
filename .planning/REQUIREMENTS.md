@@ -78,31 +78,31 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | — | Pending |
-| FOUND-02 | — | Pending |
-| FOUND-03 | — | Pending |
-| FOUND-04 | — | Pending |
-| FOUND-05 | — | Pending |
-| META-01 | — | Pending |
-| META-02 | — | Pending |
-| META-03 | — | Pending |
-| SEM-01 | — | Pending |
-| SEM-02 | — | Pending |
-| SEM-03 | — | Pending |
-| TREE-01 | — | Pending |
-| TREE-02 | — | Pending |
-| STRAT-01 | — | Pending |
-| STRAT-02 | — | Pending |
-| STRAT-03 | — | Pending |
-| ENRICH-01 | — | Pending |
-| ENRICH-02 | — | Pending |
-| ENRICH-03 | — | Pending |
+| FOUND-01 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Pending |
+| FOUND-03 | Phase 1 | Pending |
+| FOUND-04 | Phase 2 | Pending |
+| FOUND-05 | Phase 5 | Pending |
+| META-01 | Phase 3 | Pending |
+| META-02 | Phase 3 | Pending |
+| META-03 | Phase 3 | Pending |
+| SEM-01 | Phase 2 | Pending |
+| SEM-02 | Phase 3 | Pending |
+| SEM-03 | Phase 3 | Pending |
+| TREE-01 | Phase 3 | Pending |
+| TREE-02 | Phase 3 | Pending |
+| STRAT-01 | Phase 4 | Pending |
+| STRAT-02 | Phase 4 | Pending |
+| STRAT-03 | Phase 4 | Pending |
+| ENRICH-01 | Phase 2 | Pending |
+| ENRICH-02 | Phase 2 | Pending |
+| ENRICH-03 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19 ⚠️
+- Mapped to phases: 19
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after initial definition*
+*Last updated: 2026-02-22 after roadmap creation*
