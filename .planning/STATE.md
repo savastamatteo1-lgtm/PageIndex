@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Given a legal query, find the right documents from a large corpus and extract the precise relevant sections -- combining structured metadata filtering with semantic understanding and reasoning-based retrieval.
-**Current focus:** Phase 1: Schema and LLM Abstraction
+**Current focus:** Phase 2: Ingestion Pipeline
 
 ## Current Position
 
-Phase: 1 of 5 (Schema and LLM Abstraction)
-Plan: 2 of 2 in current phase
-Status: Phase 1 complete
-Last activity: 2026-02-22 -- Completed 01-02-PLAN.md (LLM abstraction layer)
+Phase: 2 of 5 (Ingestion Pipeline)
+Plan: 0 of 0 in current phase
+Status: Context gathered, ready for planning
+Last activity: 2026-02-22 -- Phase 2 context gathered
 
 Progress: [██████████] 100% (Phase 1: 2/2 plans)
 
@@ -66,5 +66,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 01-01-PLAN.md and 01-02-PLAN.md (Phase 1 complete)
-Resume file: .planning/phases/01-schema-and-llm-abstraction/01-01-SUMMARY.md
+Stopped at: Phase 2 context gathered
+Resume file: .planning/phases/02-ingestion-pipeline/02-CONTEXT.md
