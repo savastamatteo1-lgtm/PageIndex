@@ -45,11 +45,12 @@ Plans:
   3. Each ingested document has a one-sentence LLM-generated description stored alongside its metadata
   4. Each ingested document has chunks with vector embeddings stored in pgvector, where chunk boundaries follow tree leaf nodes
   5. Ingestion failures for individual documents do not halt the batch, and failed documents can be identified and retried
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md -- DB migration (ingestion_status, needs_review), pipeline data models, LLM prompt templates, recursive text splitter
+- [ ] 02-02-PLAN.md -- Per-document pipeline stages (tree index, metadata extract, description, chunk, embed, store) and DB update/delete helpers
+- [ ] 02-03-PLAN.md -- Batch orchestration with ingest() entry point, ThreadPoolExecutor, rollback, resume, and config extension
 
 ### Phase 3: Retrieval Engines
 **Goal**: All four retrieval strategies (metadata, semantic, tree search, description) work independently against the ingested corpus
@@ -102,7 +103,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Schema and LLM Abstraction | 2/2 | Complete    | 2026-02-22 |
-| 2. Ingestion Pipeline | 0/0 | Not started | - |
+| 2. Ingestion Pipeline | 0/3 | Planning complete | - |
 | 3. Retrieval Engines | 0/0 | Not started | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
 | 5. Public API | 0/0 | Not started | - |
