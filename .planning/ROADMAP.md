@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The `documents` table stores Italian legal metadata fields (doc_type, date, authority, ecli, gu_number, legal_area, parties, court_level, cross_references) plus a flexible JSONB column for additional fields
   3. An LLM call (completion or embedding) can be made through the abstraction layer using Gemini without any provider-specific code at the call site
   4. Switching the configured LLM provider in config requires zero code changes in consuming modules
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Supabase database schema, migration SQL, DB data access layer, and Italian legal vocabulary reference
+- [ ] 01-02-PLAN.md -- LiteLLM provider abstraction, config extension, and backward-compatible utils.py refactor
 
 ### Phase 2: Ingestion Pipeline
 **Goal**: PDFs can be batch-processed through the full pipeline (tree indexing, metadata extraction, description generation, chunking, embedding) and stored in Supabase
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Schema and LLM Abstraction | 0/0 | Not started | - |
+| 1. Schema and LLM Abstraction | 0/2 | Planned | - |
 | 2. Ingestion Pipeline | 0/0 | Not started | - |
 | 3. Retrieval Engines | 0/0 | Not started | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
