@@ -9,35 +9,36 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 
 ## Current Position
 
-Phase: 2 of 5 (Ingestion Pipeline)
-Plan: 2 of 3 in current phase
-Status: Executing Phase 2 plans
-Last activity: 2026-02-22 -- Completed 02-02 (Per-Document Pipeline Stages)
+Phase: 2 of 5 (Ingestion Pipeline) -- COMPLETE
+Plan: 3 of 3 in current phase
+Status: Phase 2 complete, ready for Phase 3 planning
+Last activity: 2026-02-22 -- Completed 02-03 (Batch Orchestration)
 
-Progress: [██████░░░░] 67% (Phase 2: 2/3 plans)
+Progress: [██████████] 100% (Phase 2: 3/3 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 3min
-- Total execution time: 12min
+- Total execution time: 14min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 2 | 6min | 3min |
-| 2 | 2 | 6min | 3min |
+| 2 | 3 | 8min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3min), 01-02 (3min), 02-01 (3min), 02-02 (3min)
+- Last 5 plans: 01-01 (3min), 01-02 (3min), 02-01 (3min), 02-02 (3min), 02-03 (2min)
 - Trend: Consistent
 
 *Updated after each plan completion*
 | Phase 01 P01 | 3min | 2 tasks | 7 files |
 | Phase 02 P01 | 3min | 2 tasks | 5 files |
 | Phase 02 P02 | 3min | 2 tasks | 4 files |
+| Phase 02 P03 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - [02-02]: Embedding text truncation removes words from chunk content end, preserving metadata prefix
 - [02-02]: Tree text stripping via deep-copy + recursive key removal before DB storage
 - [02-02]: Tenacity retry with exponential backoff (min=1, max=30, 3 attempts) for all LLM/embed calls
+- [02-03]: Config override chain: hardcoded defaults -> config.yaml -> explicit function parameters (None-check pattern)
+- [02-03]: Rollback looks up document by name after failure rather than tracking doc_id through the call
+- [02-03]: ingest_errors.jsonl in append mode so consecutive runs accumulate error history
 
 ### Pending Todos
 
@@ -77,5 +81,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 02-02-PLAN.md
-Resume file: .planning/phases/02-ingestion-pipeline/02-02-SUMMARY.md
+Stopped at: Completed 02-03-PLAN.md (Phase 2 complete)
+Resume file: .planning/phases/02-ingestion-pipeline/02-03-SUMMARY.md

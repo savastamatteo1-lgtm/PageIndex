@@ -13,7 +13,7 @@ This roadmap delivers a multi-document Italian legal retrieval system on top of 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Schema and LLM Abstraction** - Supabase database schema, Italian legal metadata definitions, and provider-agnostic LLM layer
-- [ ] **Phase 2: Ingestion Pipeline** - Batch processing of PDFs into indexed, enriched, and embedded documents stored in Supabase
+- [x] **Phase 2: Ingestion Pipeline** - Batch processing of PDFs into indexed, enriched, and embedded documents stored in Supabase
 - [ ] **Phase 3: Retrieval Engines** - Metadata search, semantic search, tree search, and description search working independently
 - [ ] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection
 - [ ] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration
@@ -45,12 +45,12 @@ Plans:
   3. Each ingested document has a one-sentence LLM-generated description stored alongside its metadata
   4. Each ingested document has chunks with vector embeddings stored in pgvector, where chunk boundaries follow tree leaf nodes
   5. Ingestion failures for individual documents do not halt the batch, and failed documents can be identified and retried
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 02-01-PLAN.md -- DB migration (ingestion_status, needs_review), pipeline data models, LLM prompt templates, recursive text splitter
-- [ ] 02-02-PLAN.md -- Per-document pipeline stages (tree index, metadata extract, description, chunk, embed, store) and DB update/delete helpers
-- [ ] 02-03-PLAN.md -- Batch orchestration with ingest() entry point, ThreadPoolExecutor, rollback, resume, and config extension
+- [x] 02-01-PLAN.md -- DB migration (ingestion_status, needs_review), pipeline data models, LLM prompt templates, recursive text splitter
+- [x] 02-02-PLAN.md -- Per-document pipeline stages (tree index, metadata extract, description, chunk, embed, store) and DB update/delete helpers
+- [x] 02-03-PLAN.md -- Batch orchestration with ingest() entry point, ThreadPoolExecutor, rollback, resume, and config extension
 
 ### Phase 3: Retrieval Engines
 **Goal**: All four retrieval strategies (metadata, semantic, tree search, description) work independently against the ingested corpus
@@ -103,7 +103,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Schema and LLM Abstraction | 2/2 | Complete    | 2026-02-22 |
-| 2. Ingestion Pipeline | 0/3 | Planning complete | - |
+| 2. Ingestion Pipeline | 3/3 | Complete | 2026-02-22 |
 | 3. Retrieval Engines | 0/0 | Not started | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
 | 5. Public API | 0/0 | Not started | - |
