@@ -36,7 +36,8 @@ def load_vocabulary() -> dict:
 
     vocab_path = Path(__file__).resolve().parent.parent / "schema" / "legal_vocabulary.yaml"
     with open(vocab_path, "r", encoding="utf-8") as f:
-        _vocabulary_cache = yaml.safe_load(f)
+        data = yaml.safe_load(f)
+    _vocabulary_cache = data if isinstance(data, dict) else {}
     return _vocabulary_cache
 
 
