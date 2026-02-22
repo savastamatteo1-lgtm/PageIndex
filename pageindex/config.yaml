@@ -19,3 +19,11 @@ llm:
 supabase:
   url_env: "SUPABASE_URL"
   key_env: "SUPABASE_KEY"
+
+# Ingestion pipeline settings
+ingestion:
+  metadata_pages: 3          # Number of pages to scan for metadata extraction
+  chunk_max_tokens: 800      # Maximum tokens per chunk before splitting
+  chunk_overlap: 0.1         # Overlap ratio between consecutive sub-chunks (10%)
+  max_workers: 1             # Concurrent document processing threads (1 = sequential)
+  max_embedding_batch: 250   # Maximum texts per embedding API call
