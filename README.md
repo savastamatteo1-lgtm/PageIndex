@@ -147,13 +147,35 @@ You can follow these steps to generate a PageIndex tree from a PDF document.
 pip3 install --upgrade -r requirements.txt
 ```
 
-### 2. Set your OpenAI API key
+Key dependencies: `google-genai`, `pymupdf`, `PyPDF2`, `python-dotenv`, `pyyaml`, `litellm` (multi-provider LLM), `supabase` (database client).
 
-Create a `.env` file in the root directory and add your API key:
+### 2. Set your API key
+
+Create a `.env` file in the root directory and add your API key. The default model uses Google Gemini:
 
 ```bash
-CHATGPT_API_KEY=your_openai_key_here
+GOOGLE_API_KEY=your_google_api_key_here
 ```
+
+> **Multi-provider support:** PageIndex uses [LiteLLM](https://github.com/BerriAI/litellm) under the hood, so you can use any supported provider. Set the appropriate API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) and update the model name in `pageindex/config.yaml`.
+
+<details>
+<summary><strong>Optional: Supabase for multi-document storage</strong></summary>
+<br>
+To enable persistent document storage with Italian legal metadata, add your Supabase credentials:
+
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
+```
+
+Then apply the database schema:
+
+```sql
+-- Run the migration in your Supabase SQL editor
+-- See pageindex/db/migrations/001_initial_schema.sql
+```
+</details>
 
 ### 3. Run PageIndex on your PDF
 
@@ -167,13 +189,13 @@ python3 run_pageindex.py --pdf_path /path/to/your/document.pdf
 You can customize the processing with additional optional arguments:
 
 ```
---model                 OpenAI model to use (default: gpt-4o-2024-11-20)
+--model                 LLM model to use (default: gemini-3.1-pro-preview)
 --toc-check-pages       Pages to check for table of contents (default: 20)
 --max-pages-per-node    Max pages per node (default: 10)
 --max-tokens-per-node   Max tokens per node (default: 20000)
 --if-add-node-id        Add node ID (yes/no, default: yes)
 --if-add-node-summary   Add node summary (yes/no, default: yes)
---if-add-doc-description Add doc description (yes/no, default: yes)
+--if-add-doc-description Add doc description (yes/no, default: no)
 ```
 </details>
 
@@ -189,7 +211,80 @@ python3 run_pageindex.py --md_path /path/to/your/document.md
 > Note: in this function, we use "#" to determine node heading and their levels. For example, "##" is level 2, "###" is level 3, etc. Make sure your markdown file is formatted correctly. If your Markdown file was converted from a PDF or HTML, we don't recommend using this function, since most existing conversion tools cannot preserve the original hierarchy. Instead, use our [PageIndex OCR](https://pageindex.ai/blog/ocr), which is designed to preserve the original hierarchy, to convert the PDF to a markdown file and then use this function.
 </details>
 
-<!-- 
+---
+
+# 📂 Multi-Document Legal Retrieval
+
+PageIndex extends beyond single-document indexing with a **multi-document storage and retrieval layer** designed for Italian legal documents. This is built on two foundations:
+
+### Supabase Database Layer
+
+A Supabase-backed data layer stores document metadata, text chunks with vector embeddings, and PageIndex tree structures:
+
+| Table | Purpose |
+|-------|---------|
+| `documents` | Document registry with legal metadata (doc_type, authority, ECLI, legal_area, parties, etc.) |
+| `chunks` | Text segments with `embedding vector(768)` for similarity search |
+| `document_trees` | Serialized PageIndex tree structures per document |
+
+```python
+from pageindex.db import insert_document, match_chunks
+
+# Register a new legal document
+doc = insert_document("decreto_123.pdf", metadata={
+    "doc_type": "decreto_legislativo",
+    "authority": "Parlamento",
+    "legal_area": "civile",
+})
+
+# Semantic search across all stored chunks
+results = match_chunks(query_embedding, match_count=5)
+```
+
+### Provider-Agnostic LLM Abstraction
+
+All LLM calls go through a unified [LiteLLM](https://github.com/BerriAI/litellm) abstraction layer, supporting Gemini, OpenAI, Anthropic, and local models:
+
+```python
+from pageindex.utils import llm_complete, llm_embed
+
+# Completion (uses model from config.yaml, default: gemini/gemini-2.0-flash)
+answer = llm_complete([{"role": "user", "content": "Summarize this article"}])
+
+# Embedding (default: gemini/gemini-embedding-001, 768 dimensions)
+vectors = llm_embed(["text to embed"])
+```
+
+To switch providers, update `pageindex/config.yaml`:
+
+```yaml
+llm:
+  completion_model: "openai/gpt-4o"        # or "anthropic/claude-sonnet-4-20250514"
+  embedding_model: "openai/text-embedding-3-small"
+```
+
+### Project Structure
+
+```
+pageindex/
+├── page_index.py          # Core PDF tree structure generator
+├── page_index_md.py       # Markdown tree structure generator
+├── utils.py               # Shared utilities (includes llm_complete, llm_embed)
+├── config.yaml            # Model, tree, and Supabase settings
+├── db/                    # Supabase data access layer
+│   ├── client.py          #   Connection management
+│   ├── documents.py       #   Document CRUD operations
+│   ├── chunks.py          #   Chunk storage and vector search
+│   ├── trees.py           #   Tree structure persistence
+│   └── migrations/        #   SQL schema migrations
+├── llm/                   # Provider-agnostic LLM abstraction
+│   ├── provider.py        #   LLMProvider class (completion + embedding)
+│   └── config.py          #   LLM configuration loader
+└── schema/                # Reference data
+    └── legal_vocabulary.yaml  # Italian legal terminology
+```
+
+<!--
 # ☁️ Improved Tree Generation with PageIndex OCR
 
 This repo is designed for generating PageIndex tree structure for simple PDFs, but many real-world use cases involve complex PDFs that are hard to parse by classic Python tools. However, extracting high-quality text from PDF documents remains a non-trivial challenge. Most OCR tools only extract page-level content, losing the broader document context and hierarchy.
