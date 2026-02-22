@@ -22,14 +22,11 @@
 ## Frameworks
 
 **Core:**
-- OpenAI Python Client (`openai==1.101.0`) - Integration with OpenAI's API for LLM-based document analysis and reasoning
+- Google Gemini Python SDK (`google-genai>=1.47.0`) - Integration with Google's Gemini API for LLM-based document analysis and reasoning
 
 **PDF Processing:**
 - PyMuPDF (`pymupdf==1.26.4`) - PDF text extraction and page processing
 - PyPDF2 (`PyPDF2==3.0.1`) - PDF manipulation and page handling (secondary to PyMuPDF)
-
-**Token Counting:**
-- tiktoken (`tiktoken==0.11.0`) - Token counting for OpenAI models to manage context windows
 
 **Configuration:**
 - python-dotenv (`python-dotenv==1.1.0`) - Environment variable loading for API keys and secrets
@@ -42,12 +39,12 @@
 ## Key Dependencies
 
 **Critical:**
-- `openai==1.101.0` - Enables all reasoning-based document analysis features. Application cannot function without valid API key.
+- `google-genai>=1.47.0` - Enables all reasoning-based document analysis features via Google Gemini. Application cannot function without valid API key.
 - `pymupdf==1.26.4` - Primary PDF text extraction. Heavily used in `pageindex/page_index.py` for PDF parsing.
-- `tiktoken==0.11.0` - Token counting essential for managing LLM context limits and tracking node token budgets.
+- Gemini built-in `count_tokens` - Token counting via `_gemini_client.models.count_tokens()`, no separate tokenizer library needed.
 
 **Infrastructure:**
-- `python-dotenv==1.1.0` - Loads `CHATGPT_API_KEY` environment variable at application startup
+- `python-dotenv==1.1.0` - Loads `GOOGLE_API_KEY` environment variable at application startup
 - `pyyaml==6.0.2` - Loads default configuration from `pageindex/config.yaml`
 - `PyPDF2==3.0.1` - Fallback/supplementary PDF handling, used alongside PyMuPDF
 
@@ -55,12 +52,12 @@
 
 **Environment:**
 - Configuration loaded via `python-dotenv` from `.env` file (listed in `.gitignore`)
-- Primary env var: `CHATGPT_API_KEY` - Required for all OpenAI API calls
+- Primary env var: `GOOGLE_API_KEY` - Required for all Gemini API calls
 - Config file: `pageindex/config.yaml` - Default settings for document processing parameters
 
 **Key Configuration Values (from `pageindex/config.yaml`):**
 ```yaml
-model: "gpt-4o-2024-11-20"
+model: "gemini-3.1-pro-preview"
 toc_check_page_num: 20
 max_page_num_each_node: 10
 max_token_num_each_node: 20000
@@ -79,25 +76,27 @@ if_add_node_text: "no"
 **Development:**
 - Python 3.8 or higher
 - pip package manager
-- OpenAI API account with valid API key
+- Google Gemini API account with valid API key
 - ~50MB disk space for dependencies
 
 **Production:**
 - Same Python runtime requirements
-- Network connectivity for OpenAI API calls
-- API rate limits: Application implements 10-retry logic with exponential backoff
+- Network connectivity for Gemini API calls
+- Gemini API rate limits: Application implements 10-retry logic with exponential backoff
 
 ## API Behavior & Resilience
 
-**OpenAI Integration Patterns:**
-- Synchronous calls via `ChatGPT_API()` in `pageindex/utils.py:52-75`
-- Asynchronous calls via `ChatGPT_API_async()` in `pageindex/utils.py:76-92`
+**Gemini Integration Patterns:**
+- Synchronous calls via `Gemini_API()` in `pageindex/utils.py`
+- Asynchronous calls via `Gemini_API_async()` in `pageindex/utils.py`
+- Finish-reason-aware calls via `Gemini_API_with_finish_reason()` in `pageindex/utils.py`
 - Retry mechanism: 10 attempts with 1-second delays between retries
 - Temperature: 0 (deterministic responses for consistent document analysis)
 - Error handling: Logs failures, returns "Error" string on max retry exhaustion
+- Response pattern: `response.text` (direct text access from Gemini response)
 
 **Token Management:**
-- Uses `tiktoken.encoding_for_model(model)` to get accurate token counts
+- Uses Gemini built-in `_gemini_client.models.count_tokens(model, contents)` for accurate token counts
 - Enforces `max_token_num_each_node: 20000` for context window management
 - Node summaries generated only when token count exceeds `summary_token_threshold`
 

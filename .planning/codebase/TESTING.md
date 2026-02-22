@@ -58,11 +58,11 @@ tests/
 
 **Patterns:**
 - No mocking observed in codebase
-- All API calls to OpenAI are real (use actual CHATGPT_API_KEY from environment)
+- All API calls to Gemini are real (use actual GOOGLE_API_KEY from environment)
 - No mock objects for external services
 
 **What to Mock:**
-- OpenAI API calls (`ChatGPT_API`, `ChatGPT_API_async`, `ChatGPT_API_with_finish_reason`)
+- Gemini API calls (`Gemini_API`, `Gemini_API_async`, `Gemini_API_with_finish_reason`)
 - PDF parsing to speed up tests and avoid file I/O
 - LLM responses for deterministic test outcomes
 
@@ -107,7 +107,7 @@ tests/
 **Integration Tests:**
 - Implicit integration testing via `run_pageindex.py` script
 - Tests complete workflows: PDF loading → TOC detection → indexing → JSON output
-- Uses real PDFs and OpenAI API calls
+- Uses real PDFs and Gemini API calls
 - Results stored for manual inspection
 
 **Example integration test flow (`run_pageindex.py`, lines 46-79):**
@@ -140,7 +140,7 @@ with open(output_file, 'w', encoding='utf-8') as f:
 **Test invocation:**
 ```bash
 # PDF E2E test
-python run_pageindex.py --pdf_path tests/pdfs/PRML.pdf --model gpt-4o-2024-11-20
+python run_pageindex.py --pdf_path tests/pdfs/PRML.pdf --model gemini-3.1-pro-preview
 
 # Markdown E2E test
 python run_pageindex.py --md_path example.md --if-thinning yes

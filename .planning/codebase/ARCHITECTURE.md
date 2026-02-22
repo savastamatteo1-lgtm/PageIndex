@@ -7,7 +7,7 @@
 **Overall:** Hierarchical Tree Indexing with LLM-Driven Document Parsing
 
 **Key Characteristics:**
-- Multi-stage document parsing pipeline using GPT-4 for reasoning-based retrieval
+- Multi-stage document parsing pipeline using Gemini for reasoning-based retrieval
 - Hierarchical tree structure generation (ToC-like indexing) without vector databases
 - Async-concurrent processing for scalable LLM API calls
 - Two input modes: PDF files and Markdown documents
@@ -18,15 +18,15 @@
 **PDF Parsing Layer:**
 - Purpose: Extract page-level text and metadata from PDF documents
 - Location: `pageindex/utils.py` (functions like `get_page_tokens`, `get_text_of_pages`)
-- Contains: PDF extraction using PyPDF2 and PyMuPDF, token counting via tiktoken
-- Depends on: External PDF parsing libraries (PyPDF2, pymupdf), OpenAI tokenizer
+- Contains: PDF extraction using PyPDF2 and PyMuPDF, token counting via Gemini API
+- Depends on: External PDF parsing libraries (PyPDF2, pymupdf), Gemini API
 - Used by: Main pipeline in `page_index_main`
 
 **LLM Reasoning Layer:**
-- Purpose: Use GPT-4 to understand document structure and validate extracted sections
-- Location: `pageindex/utils.py` (ChatGPT_API, ChatGPT_API_async) and `pageindex/page_index.py`
+- Purpose: Use Gemini to understand document structure and validate extracted sections
+- Location: `pageindex/utils.py` (Gemini_API, Gemini_API_async) and `pageindex/page_index.py`
 - Contains: Prompts for table-of-contents detection, section mapping, title validation, description generation
-- Depends on: OpenAI API (async and sync clients), environment variables for API keys
+- Depends on: Gemini API (async and sync clients), environment variables for API keys
 - Used by: ToC detection, index extraction, summary generation, validation
 
 **ToC Processing Layer:**
@@ -206,7 +206,7 @@
 
 **Programmatic API Entry:**
 - Location: `pageindex/page_index.py:1103-1111` (`page_index()` function)
-- Triggers: `from pageindex import page_index; page_index(doc_path, model='gpt-4o', ...)`
+- Triggers: `from pageindex import page_index; page_index(doc_path, model='gemini-3.1-pro-preview', ...)`
 - Responsibilities:
   - Accept optional keyword arguments for all configuration options
   - Load config with user overrides
@@ -223,7 +223,7 @@
 **Patterns:**
 
 **API Errors (Retry Loop):**
-- Location: `ChatGPT_API()`, `ChatGPT_API_async()` in `pageindex/utils.py:29-108`
+- Location: `Gemini_API()`, `Gemini_API_async()` in `pageindex/utils.py:29-108`
 - Mechanism: Up to 10 retries with 1-second delays between attempts
 - Fallback: Log error and return "Error" string after max retries
 
@@ -257,7 +257,7 @@
 - Concurrency: Async checks for all sections in parallel
 
 **Token Management:**
-- Framework: `tiktoken` library for accurate token counting
+- Framework: Gemini API built-in `count_tokens` for accurate token counting
 - Usage: Count tokens for each page, used to decide node subdivision
 - Location: `count_tokens()` in `pageindex/utils.py:22-27`
 

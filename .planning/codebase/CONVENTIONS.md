@@ -10,7 +10,7 @@
 
 **Functions:**
 - Lowercase with underscores: `check_title_appearance()`, `extract_json()`, `get_pdf_title()`
-- Async functions use `async def` prefix: `check_title_appearance_in_start_concurrent()`, `ChatGPT_API_async()`
+- Async functions use `async def` prefix: `check_title_appearance_in_start_concurrent()`, `Gemini_API_async()`
 - Helper/nested functions use lowercase: `find_node()`, `find_all_children()`
 - Private/internal functions do not use leading underscore (example: `extract_json()` is public despite internal use)
 
@@ -39,13 +39,13 @@
 
 **Order:**
 1. Standard library imports: `os`, `json`, `copy`, `math`, `random`, `re`, `logging`, `time`, `asyncio`
-2. Third-party imports: `openai`, `tiktoken`, `PyPDF2`, `pymupdf`, `yaml`, `pathlib`
+2. Third-party imports: `google.genai`, `PyPDF2`, `pymupdf`, `yaml`, `pathlib`
 3. Relative imports: `from .utils import *`, `from .page_index import *`
 
 **Example from `utils.py` (lines 1-18):**
 ```python
-import tiktoken
-import openai
+from google import genai
+from google.genai import types
 import logging
 import os
 from datetime import datetime
@@ -57,6 +57,7 @@ import asyncio
 import pymupdf
 from io import BytesIO
 from dotenv import load_dotenv
+load_dotenv()
 import logging  # duplicated - indicates possible oversight
 import yaml
 from pathlib import Path
@@ -80,12 +81,12 @@ from types import SimpleNamespace as config
 - Try/except for JSON parsing with fallback cleanup steps (lines 125-156 in `utils.py`)
 - Returns empty dict `{}` on JSON parsing failure
 
-**Example from `ChatGPT_API()` (lines 61-87 in `utils.py`):**
+**Example from `Gemini_API()` (lines 61-87 in `utils.py`):**
 ```python
 for i in range(max_retries):
     try:
         # operation
-        return response.choices[0].message.content
+        return response.text
     except Exception as e:
         print('************* Retrying *************')
         logging.error(f"Error: {e}")
@@ -138,7 +139,7 @@ class JsonLogger:
 
 **Size:**
 - Functions vary from small (10-20 lines) to large (100+ lines)
-- Large functions: `page_index_main()` (1143 lines across file), `ChatGPT_API()` (26 lines)
+- Large functions: `page_index_main()` (1143 lines across file), `Gemini_API()` (26 lines)
 - Async functions tend to be smaller due to concurrent patterns
 
 **Parameters:**

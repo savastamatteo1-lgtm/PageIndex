@@ -70,7 +70,7 @@ PageIndex/
 
 **Configuration:**
 - `pageindex/config.yaml`: Default configuration (model, page limits, token limits, output options)
-- `requirements.txt`: Python dependencies (openai, pymupdf, PyPDF2, tiktoken, python-dotenv, pyyaml)
+- `requirements.txt`: Python dependencies (google-genai, pymupdf, PyPDF2, python-dotenv, pyyaml)
 
 **Core Logic:**
 - `pageindex/page_index.py`: PDF document parsing, ToC detection, section extraction, tree building, node recursion
@@ -176,7 +176,7 @@ PageIndex/
 - Committed: No (in .gitignore)
 
 **.env** (not visible, referenced in utils.py)
-- Purpose: Environment variables for API keys (CHATGPT_API_KEY)
+- Purpose: Environment variables for API keys (GOOGLE_API_KEY)
 - Generated: No, user-created
 - Committed: No (in .gitignore for security)
 
@@ -199,7 +199,7 @@ PageIndex/
 - All in: `pageindex/page_index_md.py` (organized by stage)
 
 **Utilities by Category (pageindex/utils.py):**
-- **LLM API**: `ChatGPT_API()`, `ChatGPT_API_async()`, `ChatGPT_API_with_finish_reason()` (lines 22-109)
+- **LLM API**: `Gemini_API()`, `Gemini_API_async()`, `Gemini_API_with_finish_reason()` (lines 22-109)
 - **JSON/Response**: `extract_json()`, `get_json_content()`, `extract_text_from_pdf()` (lines 111-250)
 - **PDF Operations**: `get_page_tokens()`, `get_number_of_pages()`, `get_text_of_pages()` (lines 413-500)
 - **Tree Operations**: `list_to_tree()`, `post_processing()`, `add_node_text()`, `structure_to_list()` (lines 350-625)
@@ -216,7 +216,7 @@ PageIndex/
 **pageindex/page_index.py** (PDF Pipeline):
 - Imports from: `utils.py` (all utilities)
 - Uses: Async/await, concurrent.futures
-- External: openai, pymupdf, PyPDF2
+- External: google-genai, pymupdf, PyPDF2
 
 **pageindex/page_index_md.py** (Markdown Pipeline):
 - Imports from: `utils.py` (helpers)
@@ -226,7 +226,7 @@ PageIndex/
 **pageindex/utils.py** (Utilities):
 - Imports from: Standard library, config.yaml
 - Exports to: `page_index.py`, `page_index_md.py`, `run_pageindex.py`
-- External: openai, tiktoken, pymupdf, PyPDF2, pyyaml
+- External: google-genai, pymupdf, PyPDF2, pyyaml
 
 **run_pageindex.py** (CLI):
 - Imports from: `pageindex/__init__.py`, `pageindex/utils.py` (ConfigLoader)
@@ -237,8 +237,8 @@ PageIndex/
 **"Where do I add a new PDF processing feature?"**
 - Answer: `pageindex/page_index.py` around line 950+ in `meta_processor()` for routing, or new function before it
 
-**"Where is the OpenAI API call?"**
-- Answer: `pageindex/utils.py:61-108` (`ChatGPT_API()`, `ChatGPT_API_async()`)
+**"Where is the Gemini API call?"**
+- Answer: `pageindex/utils.py:61-108` (`Gemini_API()`, `Gemini_API_async()`)
 
 **"Where are tree nodes created?"**
 - Answer: `pageindex/utils.py:350` (`list_to_tree()`) for PDF, `pageindex/page_index_md.py:190` (`build_tree_from_nodes()`) for Markdown

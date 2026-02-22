@@ -4,8 +4,8 @@
 
 ## APIs & External Services
 
-**OpenAI API:**
-- Service: OpenAI (GPT-4 models for reasoning-based document analysis)
+**Google Gemini API:**
+- Service: Google Gemini (Gemini models for reasoning-based document analysis)
 - What it's used for: Core intelligence for:
   - Table of Contents detection (`toc_detector_single_page()` in `pageindex/page_index.py`)
   - Section title appearance checking (`check_title_appearance()`)
@@ -14,11 +14,11 @@
   - Document description generation (`generate_doc_description()` in `pageindex/utils.py:649`)
   - Markdown structure processing
   - All reasoning-native retrieval operations
-  - SDK/Client: `openai==1.101.0` (OpenAI Python client)
-  - Auth: Environment variable `CHATGPT_API_KEY`
+  - SDK/Client: `google-genai>=1.47.0` (Google Gemini Python SDK)
+  - Auth: Environment variable `GOOGLE_API_KEY`
   - Endpoints used:
-    - Chat completions: `client.chat.completions.create()`
-    - AsyncOpenAI: `client.chat.completions.create()` with async/await
+    - Content generation: `_gemini_client.models.generate_content()`
+    - Async variant: `_gemini_client.aio.models.generate_content()`
 
 ## Data Storage
 
@@ -40,10 +40,10 @@
 - Custom - API key-based authentication
 
 **Implementation:**
-- OpenAI API key loaded from environment via `python-dotenv`
-- In `pageindex/utils.py:20`: `CHATGPT_API_KEY = os.getenv("CHATGPT_API_KEY")`
-- Key is passed to all OpenAI API calls: `ChatGPT_API(model, prompt, api_key=CHATGPT_API_KEY)`
-- Async variant: `ChatGPT_API_async(model, prompt, api_key=CHATGPT_API_KEY)`
+- Gemini API key loaded from environment via `python-dotenv`
+- In `pageindex/utils.py:20`: `GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")`
+- Key is passed to all Gemini API calls: `Gemini_API(model, prompt, api_key=GOOGLE_API_KEY)`
+- Async variant: `Gemini_API_async(model, prompt, api_key=GOOGLE_API_KEY)`
 - No authentication token refresh mechanism implemented
 - API key must be valid for entire processing session
 
@@ -73,10 +73,10 @@
 ## Environment Configuration
 
 **Required env vars:**
-- `CHATGPT_API_KEY` - OpenAI API key (must be valid, no fallback provided)
+- `GOOGLE_API_KEY` - Gemini API key (must be valid, no fallback provided)
 
 **Optional env vars:**
-- None explicitly defined beyond `CHATGPT_API_KEY`
+- None explicitly defined beyond `GOOGLE_API_KEY`
 
 **Secrets location:**
 - `.env` file in project root (loaded by `python-dotenv` at startup)
@@ -92,18 +92,18 @@
 - None - Application does not expose HTTP endpoints or webhook receivers
 
 **Outgoing:**
-- None - Application makes one-way API calls to OpenAI only. No callbacks or polling mechanisms.
+- None - Application makes one-way API calls to Gemini only. No callbacks or polling mechanisms.
 
 ## API Rate Limiting & Quotas
 
-**OpenAI API Considerations:**
-- Rate limits: Subject to OpenAI API account quotas
+**Gemini API Considerations:**
+- Rate limits: Subject to Google Gemini API account quotas
 - Retry strategy: 10 retries with 1-second linear backoff per failed API call
 - No rate limit handling: Application does not implement token bucket, exponential backoff for rate limits, or adaptive retry delays
 - Cost implications:
-  - Model: `gpt-4o-2024-11-20` (high-cost model)
+  - Model: `gemini-3.1-pro-preview`
   - Costs scale with document size: longer documents = more API calls for tree generation
-  - Token counting included (via `tiktoken`) to estimate costs
+  - Token counting via Gemini built-in `count_tokens` API
 - Error handling: Returns "Error" string on max retries exceeded (caller responsible for handling)
 
 ## Data Flow During Processing
@@ -111,8 +111,8 @@
 **PDF Processing Pipeline:**
 1. User provides PDF path via `run_pageindex.py --pdf_path`
 2. `pymupdf` extracts text from all pages: `pageindex/utils.py:extract_text_from_pdf()`
-3. `tiktoken` counts tokens per page and section
-4. OpenAI API called to:
+3. Gemini API counts tokens via `_gemini_client.models.count_tokens()` per page and section
+4. Gemini API called to:
    - Detect table of contents in first N pages (`toc_check_page_num: 20`)
    - Extract and structure TOC into tree
    - Verify section titles appear in expected pages
@@ -124,7 +124,7 @@
 1. User provides Markdown path via `run_pageindex.py --md_path`
 2. `page_index_md.py:extract_nodes_from_markdown()` parses headers
 3. Optional tree thinning: merges small nodes if below `min_token_threshold`
-4. Async calls to OpenAI for summaries: `asyncio.gather()` for concurrent processing
+4. Async calls to Gemini for summaries: `asyncio.gather()` for concurrent processing
 5. Document description generated if `if_add_doc_description='yes'`
 6. Tree structure output to JSON: `results/{filename}_structure.json`
 
@@ -133,13 +133,13 @@
 **Token Budgets:**
 - Per-node limit: `max_token_num_each_node: 20000` (from config)
 - Summary generation threshold: `summary_token_threshold: 200` (configurable)
-- Token counting: Always uses correct model tokenizer via `tiktoken.encoding_for_model(model)`
+- Token counting: Uses Gemini API built-in token counting via `_gemini_client.models.count_tokens(model, contents)`
 
 **Concurrent API Calls:**
 - Used in: `pageindex/page_index.py` - concurrent PDF page processing
 - Method: `concurrent.futures.ThreadPoolExecutor` for multi-page processing
 - Used in: `pageindex/page_index_md.py` - parallel node summary generation
-- Method: `asyncio.gather()` for async OpenAI calls
+- Method: `asyncio.gather()` for async Gemini calls
 
 ---
 

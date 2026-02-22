@@ -29,7 +29,7 @@
 - Fix approach: Add explicit `import asyncio` at top of module
 
 **Hardcoded Model Name:**
-- Issue: `generate_toc_continue()` (line 499) hardcodes model as `"gpt-4o-2024-11-20"` instead of accepting it as parameter or using config
+- Issue: `generate_toc_continue()` (line 499) hardcodes model as `"gemini-3.1-pro-preview"` instead of accepting it as parameter or using config
 - Files: `pageindex/page_index.py` (line 499)
 - Impact: Inconsistent with other functions that accept model parameter; makes it impossible to swap models for this function without editing code
 - Fix approach: Accept model as parameter, default to config value
@@ -76,14 +76,14 @@
 
 ## Security Considerations
 
-**OpenAI API Key Exposure:**
-- Risk: CHATGPT_API_KEY loaded from environment (line 20 `pageindex/utils.py`) but used directly in function parameters; if error occurs, key could be logged in error messages
+**Gemini API Key Exposure:**
+- Risk: GOOGLE_API_KEY loaded from environment (line 20 `pageindex/utils.py`) but used directly in function parameters; if error occurs, key could be logged in error messages
 - Files: `pageindex/utils.py` (line 20, 29, 61, 89)
 - Current mitigation: Uses `logging.error()` which may or may not redact the prompt (prompts are passed but api_key is default parameter)
 - Recommendations:
   1. Never include API key in logged prompts
   2. Add sanitization to logging functions
-  3. Consider using OpenAI client's built-in auth instead of passing key
+  3. Consider using Gemini client's built-in auth instead of passing key
 
 **Unvalidated File Operations:**
 - Risk: `get_page_tokens()` (line 413) accepts `pdf_path` parameter but only checks file existence for string paths, not BytesIO streams; no size validation
@@ -100,10 +100,10 @@
 ## Performance Bottlenecks
 
 **Token Counting in Every Operation:**
-- Problem: `count_tokens()` (line 22, utils.py) is called repeatedly in hot paths without caching. Creates new tiktoken encoder for every call.
-- Files: `pageindex/utils.py` (line 22-27), called from many locations in page_index.py
-- Cause: Tiktoken encoding lookup happens on every invocation; no encoder caching
-- Improvement path: Cache tiktoken encoder at module level or use memoization decorator
+- Problem: `count_tokens()` (line 23, utils.py) is called repeatedly in hot paths. Each call makes a Gemini API request for token counting.
+- Files: `pageindex/utils.py` (line 23-27), called from many locations in page_index.py
+- Cause: Each token count requires a network API call to Gemini; no local counting available
+- Improvement path: Cache token counts for repeated text, or batch token counting requests
 
 **String Concatenation in Loops:**
 - Problem: `page_list_to_group_text()` (line 418) builds `subsets` list using `''.join()` in loop; could build very large strings
@@ -164,12 +164,12 @@
 
 **Token Limit Hardcoding:**
 - Current capacity: max_token_num_each_node defaults to 20000 (config.yaml line 4)
-- Limit: GPT-4 context windows vary but 128k is common; structured output can reduce this
+- Limit: Gemini context windows vary but 128k is common; structured output can reduce this
 - Scaling path: Make token limits configurable per model, add adaptive chunking based on actual model limits
 
 **Concurrent API Call Limits:**
 - Current capacity: Uses `asyncio.gather()` to parallelize all TOC checking (line 92, 834) with no rate limiting
-- Limit: OpenAI API has rate limits; no exponential backoff or queue implemented
+- Limit: Gemini API has rate limits; no exponential backoff or queue implemented
 - Scaling path: Add semaphore to limit concurrent requests, implement exponential backoff in retry logic
 
 **Page List Storage in Memory:**
@@ -179,10 +179,10 @@
 
 ## Dependencies at Risk
 
-**Direct OpenAI Dependency with Specific Version:**
-- Risk: `openai==1.101.0` pinned in requirements.txt (line 1); future versions may have breaking changes
-- Impact: If OpenAI changes API significantly, code could break without warning
-- Migration plan: Monitor OpenAI releases; add version range flexibility; consider wrapper abstraction
+**Direct Gemini Dependency:**
+- Risk: `google-genai>=1.47.0` in requirements.txt; future versions may have breaking changes
+- Impact: If Google changes Gemini API significantly, code could break without warning
+- Migration plan: Monitor Google Gemini releases; add version range flexibility; consider wrapper abstraction
 
 **PyMuPDF Alternative Path Untested:**
 - Risk: `get_page_tokens()` (line 413) supports both PyPDF2 and PyMuPDF via parameter, but PyMuPDF path may not work
