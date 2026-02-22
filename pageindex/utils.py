@@ -1,5 +1,17 @@
-import tiktoken
-import openai
+"""PageIndex utility functions for tree indexing and LLM interaction.
+
+Legacy functions (``Gemini_API``, ``ChatGPT_API``, ``Gemini_API_async``, etc.)
+are preserved for backward compatibility with ``page_index.py`` and
+``page_index_md.py``.
+
+**New code should use** :func:`llm_complete` and :func:`llm_embed` instead of
+the legacy ``Gemini_API`` / ``ChatGPT_API`` functions.  These delegate to the
+provider-agnostic :class:`~pageindex.llm.provider.LLMProvider` abstraction
+layer backed by LiteLLM.
+"""
+
+from google import genai
+from google.genai import types
 import logging
 import os
 from datetime import datetime
@@ -17,97 +29,170 @@ import yaml
 from pathlib import Path
 from types import SimpleNamespace as config
 
-CHATGPT_API_KEY = os.getenv("CHATGPT_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+_gemini_client = genai.Client(api_key=GOOGLE_API_KEY)
+
 
 def count_tokens(text, model=None):
+    """Count tokens for *text*.
+
+    Attempts to use the LLM abstraction layer (LiteLLM) first.  Falls back
+    to the direct google-genai SDK if the provider is unavailable.
+    """
     if not text:
         return 0
-    enc = tiktoken.encoding_for_model(model)
-    tokens = enc.encode(text)
-    return len(tokens)
+    try:
+        from pageindex.llm.provider import get_provider
+        provider = get_provider()
+        return provider.count_tokens(text, model=model)
+    except Exception:
+        # Fallback to direct google-genai SDK
+        result = _gemini_client.models.count_tokens(
+            model=model or "gemini-3.1-pro-preview",
+            contents=text,
+        )
+        return result.total_tokens
 
-def ChatGPT_API_with_finish_reason(model, prompt, api_key=CHATGPT_API_KEY, chat_history=None):
+
+def _build_gemini_contents(chat_history, prompt):
+    """Convert OpenAI-style chat history + prompt into Gemini Content objects."""
+    contents = []
+    if chat_history:
+        for msg in chat_history:
+            role = "model" if msg["role"] == "assistant" else msg["role"]
+            contents.append(
+                types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])])
+            )
+    contents.append(
+        types.Content(role="user", parts=[types.Part.from_text(text=prompt)])
+    )
+    return contents
+
+
+def Gemini_API_with_finish_reason(model, prompt, api_key=None, chat_history=None):
     max_retries = 10
-    client = openai.OpenAI(api_key=api_key)
+    client = genai.Client(api_key=api_key) if api_key else _gemini_client
     for i in range(max_retries):
         try:
-            if chat_history:
-                messages = chat_history
-                messages.append({"role": "user", "content": prompt})
-            else:
-                messages = [{"role": "user", "content": prompt}]
-            
-            response = client.chat.completions.create(
+            contents = _build_gemini_contents(chat_history, prompt)
+            response = client.models.generate_content(
                 model=model,
-                messages=messages,
-                temperature=0,
+                contents=contents,
+                config=types.GenerateContentConfig(temperature=0),
             )
-            if response.choices[0].finish_reason == "length":
-                return response.choices[0].message.content, "max_output_reached"
+            finish_reason = response.candidates[0].finish_reason
+            if finish_reason == "MAX_TOKENS":
+                return response.text, "max_output_reached"
             else:
-                return response.choices[0].message.content, "finished"
+                return response.text, "finished"
 
         except Exception as e:
             print('************* Retrying *************')
             logging.error(f"Error: {e}")
             if i < max_retries - 1:
-                time.sleep(1)  # Wait for 1秒 before retrying
+                time.sleep(1)
             else:
                 logging.error('Max retries reached for prompt: ' + prompt)
                 return "Error"
 
+ChatGPT_API_with_finish_reason = Gemini_API_with_finish_reason
 
 
-def ChatGPT_API(model, prompt, api_key=CHATGPT_API_KEY, chat_history=None):
+def Gemini_API(model, prompt, api_key=None, chat_history=None):
     max_retries = 10
-    client = openai.OpenAI(api_key=api_key)
+    client = genai.Client(api_key=api_key) if api_key else _gemini_client
     for i in range(max_retries):
         try:
-            if chat_history:
-                messages = chat_history
-                messages.append({"role": "user", "content": prompt})
-            else:
-                messages = [{"role": "user", "content": prompt}]
-            
-            response = client.chat.completions.create(
+            contents = _build_gemini_contents(chat_history, prompt)
+            response = client.models.generate_content(
                 model=model,
-                messages=messages,
-                temperature=0,
+                contents=contents,
+                config=types.GenerateContentConfig(temperature=0),
             )
-   
-            return response.choices[0].message.content
+            return response.text
         except Exception as e:
             print('************* Retrying *************')
             logging.error(f"Error: {e}")
             if i < max_retries - 1:
-                time.sleep(1)  # Wait for 1秒 before retrying
+                time.sleep(1)
             else:
                 logging.error('Max retries reached for prompt: ' + prompt)
                 return "Error"
-            
 
-async def ChatGPT_API_async(model, prompt, api_key=CHATGPT_API_KEY):
+ChatGPT_API = Gemini_API
+
+
+async def Gemini_API_async(model, prompt, api_key=None):
     max_retries = 10
-    messages = [{"role": "user", "content": prompt}]
+    client = genai.Client(api_key=api_key) if api_key else _gemini_client
+    contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
     for i in range(max_retries):
         try:
-            async with openai.AsyncOpenAI(api_key=api_key) as client:
-                response = await client.chat.completions.create(
-                    model=model,
-                    messages=messages,
-                    temperature=0,
-                )
-                return response.choices[0].message.content
+            response = await client.aio.models.generate_content(
+                model=model,
+                contents=contents,
+                config=types.GenerateContentConfig(temperature=0),
+            )
+            return response.text
         except Exception as e:
             print('************* Retrying *************')
             logging.error(f"Error: {e}")
             if i < max_retries - 1:
-                await asyncio.sleep(1)  # Wait for 1s before retrying
+                await asyncio.sleep(1)
             else:
                 logging.error('Max retries reached for prompt: ' + prompt)
-                return "Error"  
-            
-            
+                return "Error"
+
+ChatGPT_API_async = Gemini_API_async
+
+
+# ---------------------------------------------------------------------------
+# New provider-agnostic convenience functions (recommended for new code)
+# ---------------------------------------------------------------------------
+
+def llm_complete(messages, **kwargs):
+    """Provider-agnostic LLM completion via the LiteLLM abstraction layer.
+
+    This is the **recommended entry point** for new code.  It delegates to
+    :meth:`pageindex.llm.provider.LLMProvider.complete`.
+
+    Parameters
+    ----------
+    messages : list[dict]
+        OpenAI-style message list, e.g.
+        ``[{"role": "user", "content": "Hello"}]``.
+    **kwargs
+        Forwarded to ``LLMProvider.complete`` (e.g. ``temperature``).
+
+    Returns
+    -------
+    str
+        The assistant response content.
+    """
+    from pageindex.llm.provider import get_provider
+    return get_provider().complete(messages, **kwargs)
+
+
+def llm_embed(texts):
+    """Provider-agnostic embedding generation via the LiteLLM abstraction layer.
+
+    This is the **recommended entry point** for new embedding code.  It
+    delegates to :meth:`pageindex.llm.provider.LLMProvider.embed`.
+
+    Parameters
+    ----------
+    texts : list[str]
+        Texts to embed.
+
+    Returns
+    -------
+    list[list[float]]
+        One float vector per input text.
+    """
+    from pageindex.llm.provider import get_provider
+    return get_provider().embed(texts)
+
+
 def get_json_content(response):
     start_idx = response.find("```json")
     if start_idx != -1:
@@ -410,15 +495,14 @@ def add_preface_if_needed(data):
 
 
 
-def get_page_tokens(pdf_path, model="gpt-4o-2024-11-20", pdf_parser="PyPDF2"):
-    enc = tiktoken.encoding_for_model(model)
+def get_page_tokens(pdf_path, model="gemini-3.1-pro-preview", pdf_parser="PyPDF2"):
     if pdf_parser == "PyPDF2":
         pdf_reader = PyPDF2.PdfReader(pdf_path)
         page_list = []
         for page_num in range(len(pdf_reader.pages)):
             page = pdf_reader.pages[page_num]
             page_text = page.extract_text()
-            token_length = len(enc.encode(page_text))
+            token_length = count_tokens(page_text, model=model)
             page_list.append((page_text, token_length))
         return page_list
     elif pdf_parser == "PyMuPDF":
@@ -430,7 +514,7 @@ def get_page_tokens(pdf_path, model="gpt-4o-2024-11-20", pdf_parser="PyPDF2"):
         page_list = []
         for page in doc:
             page_text = page.get_text()
-            token_length = len(enc.encode(page_text))
+            token_length = count_tokens(page_text, model=model)
             page_list.append((page_text, token_length))
         return page_list
     else:
@@ -533,7 +617,7 @@ def remove_structure_text(data):
 def check_token_limit(structure, limit=110000):
     list = structure_to_list(structure)
     for node in list:
-        num_tokens = count_tokens(node['text'], model='gpt-4o')
+        num_tokens = count_tokens(node['text'], model='gemini-3.1-pro-preview')
         if num_tokens > limit:
             print(f"Node ID: {node['node_id']} has {num_tokens} tokens")
             print("Start Index:", node['start_index'])
