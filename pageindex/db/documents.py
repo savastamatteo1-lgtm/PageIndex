@@ -6,6 +6,8 @@ legal document metadata (doc_type, date, authority, ecli, etc.).
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from .client import get_client
 
 # Columns that accept direct values from the metadata dict.
@@ -21,6 +23,8 @@ _METADATA_COLUMNS = {
     "cross_references",
     "additional_fields",
     "doc_description",
+    "ingestion_status",
+    "needs_review",
 }
 
 
@@ -106,3 +110,56 @@ def list_documents(limit: int = 100, offset: int = 0) -> list[dict]:
         .execute()
     )
     return response.data
+
+
+def update_document(doc_id: str, updates: dict) -> dict:
+    """Update an existing document row and return the updated row.
+
+    Filters the *updates* dict through ``_METADATA_COLUMNS`` to prevent
+    writing to arbitrary columns.  Automatically sets ``updated_at`` to
+    the current UTC timestamp.
+
+    Parameters
+    ----------
+    doc_id : str
+        UUID of the document to update.
+    updates : dict
+        Column-value pairs to update.  Only keys present in
+        ``_METADATA_COLUMNS`` are applied; others are silently ignored.
+
+    Returns
+    -------
+    dict
+        The updated document row.
+    """
+    filtered: dict = {}
+    for key, value in updates.items():
+        if key in _METADATA_COLUMNS:
+            filtered[key] = value
+
+    # Always set updated_at to current timestamp
+    filtered["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+    client = get_client()
+    response = (
+        client.table("documents")
+        .update(filtered)
+        .eq("doc_id", doc_id)
+        .execute()
+    )
+    return response.data[0]
+
+
+def delete_document(doc_id: str) -> None:
+    """Delete a document and its related data (via ON DELETE CASCADE).
+
+    The ``document_trees`` and ``chunks`` tables have foreign keys with
+    ``ON DELETE CASCADE``, so related rows are automatically removed.
+
+    Parameters
+    ----------
+    doc_id : str
+        UUID of the document to delete.
+    """
+    client = get_client()
+    client.table("documents").delete().eq("doc_id", doc_id).execute()
