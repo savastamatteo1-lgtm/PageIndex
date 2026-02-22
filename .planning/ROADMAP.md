@@ -12,7 +12,7 @@ This roadmap delivers a multi-document Italian legal retrieval system on top of 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Schema and LLM Abstraction** - Supabase database schema, Italian legal metadata definitions, and provider-agnostic LLM layer
+- [x] **Phase 1: Schema and LLM Abstraction** - Supabase database schema, Italian legal metadata definitions, and provider-agnostic LLM layer
 - [ ] **Phase 2: Ingestion Pipeline** - Batch processing of PDFs into indexed, enriched, and embedded documents stored in Supabase
 - [ ] **Phase 3: Retrieval Engines** - Metadata search, semantic search, tree search, and description search working independently
 - [ ] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection
@@ -32,8 +32,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Supabase database schema, migration SQL, DB data access layer, and Italian legal vocabulary reference
-- [ ] 01-02-PLAN.md -- LiteLLM provider abstraction, config extension, and backward-compatible utils.py refactor
+- [x] 01-01-PLAN.md -- Supabase database schema, migration SQL, DB data access layer, and Italian legal vocabulary reference
+- [x] 01-02-PLAN.md -- LiteLLM provider abstraction, config extension, and backward-compatible utils.py refactor
 
 ### Phase 2: Ingestion Pipeline
 **Goal**: PDFs can be batch-processed through the full pipeline (tree indexing, metadata extraction, description generation, chunking, embedding) and stored in Supabase
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Schema and LLM Abstraction | 0/2 | Planned | - |
+| 1. Schema and LLM Abstraction | 2/2 | Complete | 2026-02-22 |
 | 2. Ingestion Pipeline | 0/0 | Not started | - |
 | 3. Retrieval Engines | 0/0 | Not started | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |

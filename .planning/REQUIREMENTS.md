@@ -9,9 +9,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Foundation
 
-- [ ] **FOUND-01**: System provides a Supabase document registry that stores document metadata, tree JSON structures, and embedding references with unique `doc_id` identifiers
-- [ ] **FOUND-02**: System implements Italian legal metadata schema with fields: `doc_type`, `date`, `authority`, `ecli`, `gu_number`, `legal_area`, `parties`, `court_level`, `cross_references`, plus flexible JSONB for additional fields
-- [ ] **FOUND-03**: System uses LiteLLM as provider-agnostic LLM abstraction layer supporting Gemini, OpenAI, Anthropic, and local models without code changes
+- [x] **FOUND-01**: System provides a Supabase document registry that stores document metadata, tree JSON structures, and embedding references with unique `doc_id` identifiers
+- [x] **FOUND-02**: System implements Italian legal metadata schema with fields: `doc_type`, `date`, `authority`, `ecli`, `gu_number`, `legal_area`, `parties`, `court_level`, `cross_references`, plus flexible JSONB for additional fields
+- [x] **FOUND-03**: System uses LiteLLM as provider-agnostic LLM abstraction layer supporting Gemini, OpenAI, Anthropic, and local models without code changes
 - [ ] **FOUND-04**: System provides a batch ingestion pipeline that processes PDFs through: tree indexing → metadata extraction → embedding generation → Supabase storage
 - [ ] **FOUND-05**: System exposes a Python library API for programmatic integration (`ingest`, `search`, `retrieve` as core operations)
 
@@ -78,9 +78,9 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 1 | Pending |
-| FOUND-02 | Phase 1 | Pending |
-| FOUND-03 | Phase 1 | Pending |
+| FOUND-01 | Phase 1 | Complete |
+| FOUND-02 | Phase 1 | Complete |
+| FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 2 | Pending |
 | FOUND-05 | Phase 5 | Pending |
 | META-01 | Phase 3 | Pending |
