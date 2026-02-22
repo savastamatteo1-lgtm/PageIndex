@@ -1,0 +1,148 @@
+# Vocabolario giuridico italiano - Convenzioni per l'estrazione di metadati
+#
+# Questo file e' un riferimento per l'estrattore di metadati LLM (Fase 2).
+# NON impone vincoli a livello di database: i campi nel database sono testo
+# aperto e accettano qualsiasi valore. Nuovi valori possono essere aggiunti
+# liberamente senza modifiche allo schema.
+#
+# I valori elencati qui rappresentano le convenzioni standard della
+# terminologia giuridica italiana. L'LLM li usa come guida per
+# normalizzare i metadati estratti dai documenti.
+
+doc_types:
+  - id: sentenza
+    descrizione: "Provvedimento decisorio del giudice che definisce il giudizio"
+  - id: ordinanza
+    descrizione: "Provvedimento del giudice su questioni processuali o cautelari"
+  - id: decreto
+    descrizione: "Provvedimento emesso senza contraddittorio o in camera di consiglio"
+  - id: legge
+    descrizione: "Atto normativo approvato dal Parlamento"
+  - id: decreto_legislativo
+    descrizione: "Atto normativo del Governo su delega del Parlamento"
+  - id: decreto_legge
+    descrizione: "Atto normativo provvisorio del Governo con forza di legge"
+  - id: regolamento
+    descrizione: "Atto normativo di rango secondario"
+  - id: circolare
+    descrizione: "Atto interno della pubblica amministrazione con istruzioni operative"
+  - id: parere
+    descrizione: "Pronuncia consultiva di un organo giuridico"
+  - id: delibera
+    descrizione: "Decisione collegiale di un organo amministrativo"
+  - id: atto_parlamentare
+    descrizione: "Documento prodotto nel contesto dell'attivita' parlamentare"
+
+legal_areas:
+  diritto_civile:
+    descrizione: "Rapporti giuridici tra privati"
+    sotto_aree:
+      - obbligazioni
+      - famiglia
+      - successioni
+      - diritti_reali
+      - contratti
+      - responsabilita_civile
+      - persona_e_diritti_della_personalita
+  diritto_penale:
+    descrizione: "Norme che definiscono i reati e le relative sanzioni"
+    sotto_aree:
+      - reati_contro_la_persona
+      - reati_contro_il_patrimonio
+      - reati_informatici
+      - reati_contro_la_pubblica_amministrazione
+      - reati_ambientali
+      - reati_societari
+  diritto_amministrativo:
+    descrizione: "Rapporti tra pubblica amministrazione e cittadini"
+    sotto_aree:
+      - appalti_pubblici
+      - urbanistica
+      - ambiente
+      - procedimento_amministrativo
+  diritto_del_lavoro:
+    descrizione: "Rapporti di lavoro subordinato e autonomo"
+    sotto_aree:
+      - licenziamento
+      - contrattazione_collettiva
+      - previdenza_sociale
+      - sicurezza_sul_lavoro
+  diritto_commerciale:
+    descrizione: "Attivita' di impresa, societa' e concorrenza"
+    sotto_aree:
+      - societa
+      - fallimento_e_procedure_concorsuali
+      - proprieta_intellettuale
+      - concorrenza
+  diritto_tributario:
+    descrizione: "Imposte, tributi e contenzioso fiscale"
+    sotto_aree:
+      - imposte_dirette
+      - imposte_indirette
+      - contenzioso_tributario
+  diritto_europeo:
+    descrizione: "Diritto dell'Unione Europea e della CEDU"
+    sotto_aree:
+      - diritto_UE
+      - diritti_fondamentali
+      - libera_circolazione
+  diritto_processuale:
+    descrizione: "Norme che regolano lo svolgimento dei processi"
+    sotto_aree:
+      - processo_civile
+      - processo_penale
+      - processo_amministrativo
+
+court_levels:
+  giurisdizione_ordinaria:
+    - livello: "Giudice di Pace"
+      ordine: 1
+    - livello: "Tribunale"
+      ordine: 2
+    - livello: "Corte d'Appello"
+      ordine: 3
+    - livello: "Cassazione"
+      ordine: 4
+  giurisdizione_amministrativa:
+    - livello: "TAR"
+      ordine: 1
+    - livello: "Consiglio di Stato"
+      ordine: 2
+  giurisdizione_costituzionale:
+    - livello: "Corte Costituzionale"
+      ordine: 1
+
+party_roles:
+  - id: ricorrente
+    descrizione: "Parte che propone il ricorso"
+  - id: resistente
+    descrizione: "Parte che resiste al ricorso"
+  - id: imputato
+    descrizione: "Soggetto accusato nel processo penale"
+  - id: parte_civile
+    descrizione: "Danneggiato che si costituisce nel processo penale"
+  - id: pubblico_ministero
+    descrizione: "Organo requirente che esercita l'azione penale"
+  - id: interveniente
+    descrizione: "Soggetto terzo che interviene nel giudizio"
+  - id: appellante
+    descrizione: "Parte che propone l'appello"
+  - id: appellato
+    descrizione: "Parte contro cui e' proposto l'appello"
+
+cross_reference_types:
+  - id: legislation
+    descrizione: "Riferimento a leggi, codici, articoli normativi"
+    esempi: ["art. 2043 c.c.", "art. 640 c.p.", "L. 241/1990"]
+  - id: case_law
+    descrizione: "Riferimento a sentenze e ordinanze di altri tribunali"
+    esempi: ["Cass. 12345/2020", "Corte Cost. 234/2019"]
+  - id: regulation
+    descrizione: "Riferimento a regolamenti e atti normativi secondari"
+    esempi: ["D.P.R. 380/2001", "D.M. 10/03/2020"]
+  - id: eu_law
+    descrizione: "Riferimento a normativa dell'Unione Europea"
+    esempi: ["Reg. UE 2016/679 (GDPR)", "Dir. 2014/24/UE"]
+  - id: constitutional
+    descrizione: "Riferimento a norme costituzionali"
+    esempi: ["art. 3 Cost.", "art. 24 Cost."]
