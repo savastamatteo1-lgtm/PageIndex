@@ -50,6 +50,7 @@ CONFIDENCE_THRESHOLDS: dict[str, dict[str, float]] = {
     "semantic": {"high": 0.6, "medium": 0.35},
     "description": {"high": 0.8, "medium": 0.6},
     "tree_search": {"high": 0.7, "medium": 0.4},
+    "hybrid": {"high": 0.03, "medium": 0.015},
 }
 """Per-engine score boundaries for confidence labels.
 
