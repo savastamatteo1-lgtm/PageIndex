@@ -83,7 +83,10 @@ def load_ingestion_config(config_path: str | Path | None = None) -> dict:
 def _process_with_rollback(
     pdf_path: str,
     llm_provider: LLMProvider,
-    config: dict,
+    tree_config: dict,
+    metadata_pages: int = 3,
+    chunk_max_tokens: int = 800,
+    chunk_overlap: float = 0.1,
 ) -> DocumentPipeline:
     """Process a single document and roll back on failure.
 
@@ -97,8 +100,14 @@ def _process_with_rollback(
         Absolute path to the source PDF file.
     llm_provider : LLMProvider
         LLM provider instance for completion, embedding, and token counting.
-    config : dict
-        Pipeline configuration dict passed through to ``process_single_document``.
+    tree_config : dict
+        Tree-indexer config dict (only valid ConfigLoader top-level keys).
+    metadata_pages : int
+        Number of pages to scan for metadata extraction (default 3).
+    chunk_max_tokens : int
+        Maximum tokens per chunk (default 800).
+    chunk_overlap : float
+        Overlap ratio between consecutive sub-chunks (default 0.1).
 
     Returns
     -------
@@ -112,7 +121,14 @@ def _process_with_rollback(
         can log the failure.
     """
     try:
-        return process_single_document(pdf_path, llm_provider, config)
+        return process_single_document(
+            pdf_path,
+            llm_provider,
+            tree_config,
+            metadata_pages=metadata_pages,
+            chunk_max_tokens=chunk_max_tokens,
+            chunk_overlap=chunk_overlap,
+        )
     except Exception:
         # Attempt rollback: if a document row was created, delete it
         doc_name = Path(pdf_path).name
@@ -206,12 +222,8 @@ def ingest(
     # 3. Initialize LLM provider
     provider = get_provider()
 
-    # 4. Build config dict for pipeline stages
-    pipeline_config: dict = {
-        "metadata_pages": effective_metadata_pages,
-        "chunk_max_tokens": effective_chunk_max_tokens,
-        "chunk_overlap": effective_chunk_overlap,
-        # PageIndex config overrides
+    # 4. Build tree config (ONLY valid ConfigLoader top-level keys)
+    tree_config: dict = {
         "if_add_node_id": "yes",
         "if_add_node_text": "yes",
         "if_add_node_summary": "yes",
@@ -228,7 +240,13 @@ def ingest(
     with ThreadPoolExecutor(max_workers=effective_max_workers) as executor:
         futures = {
             executor.submit(
-                _process_with_rollback, str(path), provider, pipeline_config
+                _process_with_rollback,
+                str(path),
+                provider,
+                tree_config,
+                metadata_pages=effective_metadata_pages,
+                chunk_max_tokens=effective_chunk_max_tokens,
+                chunk_overlap=effective_chunk_overlap,
             ): path
             for path in to_process
         }

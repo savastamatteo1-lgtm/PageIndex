@@ -395,6 +395,9 @@ def process_single_document(
     pdf_path: str,
     llm_provider: LLMProvider,
     config: dict | None = None,
+    metadata_pages: int = 3,
+    chunk_max_tokens: int = 800,
+    chunk_overlap: float = 0.1,
 ) -> DocumentPipeline:
     """Process a single PDF through all 6 pipeline stages.
 
@@ -412,7 +415,14 @@ def process_single_document(
     llm_provider : LLMProvider
         LLM provider for completion, embedding, and token counting.
     config : dict, optional
-        Optional overrides for tree-indexing config.
+        Optional overrides for tree-indexing config.  Keys must be valid
+        ``config.yaml`` top-level keys.
+    metadata_pages : int
+        Number of pages to scan for metadata extraction (default 3).
+    chunk_max_tokens : int
+        Maximum tokens per chunk (default 800).
+    chunk_overlap : float
+        Overlap ratio between consecutive sub-chunks (default 0.1).
 
     Returns
     -------
@@ -435,13 +445,13 @@ def process_single_document(
     stage_tree_index(pipeline, config)
 
     # Stage 2: Metadata extraction
-    stage_extract_metadata(pipeline, llm_provider)
+    stage_extract_metadata(pipeline, llm_provider, metadata_pages=metadata_pages)
 
     # Stage 3: Description generation
     stage_generate_description(pipeline, llm_provider)
 
     # Stage 4: Chunking
-    stage_chunk(pipeline, llm_provider)
+    stage_chunk(pipeline, llm_provider, max_tokens=chunk_max_tokens, overlap_ratio=chunk_overlap)
 
     # Stage 5: Embedding
     stage_embed(pipeline, llm_provider)
