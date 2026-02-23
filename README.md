@@ -139,54 +139,69 @@ You can generate the PageIndex tree structure with this open-source repo, or use
 
 # ⚙️ Package Usage
 
-You can follow these steps to generate a PageIndex tree from a PDF document.
-
 ### 1. Install dependencies
 
 ```bash
 pip3 install --upgrade -r requirements.txt
 ```
 
-Key dependencies: `google-genai`, `pymupdf`, `PyPDF2`, `python-dotenv`, `pyyaml`, `litellm` (multi-provider LLM), `supabase` (database client).
+Key dependencies: `google-genai`, `pymupdf`, `PyPDF2`, `python-dotenv`, `pyyaml`, `litellm` (multi-provider LLM), `supabase` (database client), `pydantic-settings` (layered configuration), `tenacity` (retry logic).
 
-### 2. Set your API key
+### 2. Set up credentials
 
-Create a `.env` file in the root directory and add your API key. The default model uses Google Gemini:
+Create a `.env` file in the root directory:
 
 ```bash
+# Required — Supabase connection for document storage and retrieval
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
+
+# LLM provider (default: Google Gemini)
 GOOGLE_API_KEY=your_google_api_key_here
 ```
 
-> **Multi-provider support:** PageIndex uses [LiteLLM](https://github.com/BerriAI/litellm) under the hood, so you can use any supported provider. Set the appropriate API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) and update the model name in `pageindex/config.yaml`.
+> **Multi-provider support:** PageIndex uses [LiteLLM](https://github.com/BerriAI/litellm) under the hood, so you can use any supported provider. Set the appropriate API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) and update the model name in `pageindex/config.yaml` or pass it as a constructor kwarg.
+
+### 3. Quick Start — PageIndex API
+
+The `PageIndex` class is the primary entry point for multi-document ingestion, search, and retrieval:
+
+```python
+from pageindex import PageIndex
+
+pi = PageIndex(supabase_url="https://xxx.supabase.co", supabase_key="xxx")
+
+# Ingest a PDF (runs the full 6-stage pipeline)
+result = pi.ingest(path="/path/to/document.pdf")
+print(result.document_id, result.chunks_created)
+
+# Search with automatic strategy selection
+resp = pi.search("sentenze della Corte di Cassazione dal 2020")
+print(resp.strategy_used, resp.timing, len(resp.results))
+
+# Retrieve a specific document by ID
+doc = pi.retrieve(doc_id="...")
+print(doc.name, doc.metadata)
+
+# List all stored documents
+docs = pi.list_documents(limit=50)
+```
+
+See the [Multi-Document Legal Retrieval](#-multi-document-legal-retrieval) section below for full API details, configuration options, and search strategies.
 
 <details>
-<summary><strong>Optional: Supabase for multi-document storage</strong></summary>
+<summary><strong>Alternative: Tree Structure Generation (CLI)</strong></summary>
 <br>
-To enable persistent document storage with Italian legal metadata, add your Supabase credentials:
 
-```bash
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your_supabase_anon_key
-```
-
-Then apply the database schema:
-
-```sql
--- Run the migration in your Supabase SQL editor
--- See pageindex/db/migrations/001_initial_schema.sql
-```
-</details>
-
-### 3. Run PageIndex on your PDF
+You can also use PageIndex as a standalone CLI to generate tree structures from individual documents (the original single-document workflow):
 
 ```bash
 python3 run_pageindex.py --pdf_path /path/to/your/document.pdf
 ```
 
 <details>
-<summary><strong>Optional parameters</strong></summary>
+<summary>Optional parameters</summary>
 <br>
-You can customize the processing with additional optional arguments:
 
 ```
 --model                 LLM model to use (default: gemini-3.1-pro-preview)
@@ -200,8 +215,9 @@ You can customize the processing with additional optional arguments:
 </details>
 
 <details>
-<summary><strong>Markdown support</strong></summary>
+<summary>Markdown support</summary>
 <br>
+
 We also provide markdown support for PageIndex. You can use the `-md_path` flag to generate a tree structure for a markdown file.
 
 ```bash
@@ -211,15 +227,121 @@ python3 run_pageindex.py --md_path /path/to/your/document.md
 > Note: in this function, we use "#" to determine node heading and their levels. For example, "##" is level 2, "###" is level 3, etc. Make sure your markdown file is formatted correctly. If your Markdown file was converted from a PDF or HTML, we don't recommend using this function, since most existing conversion tools cannot preserve the original hierarchy. Instead, use our [PageIndex OCR](https://pageindex.ai/blog/ocr), which is designed to preserve the original hierarchy, to convert the PDF to a markdown file and then use this function.
 </details>
 
+</details>
+
 ---
 
 # 📂 Multi-Document Legal Retrieval
 
-PageIndex extends beyond single-document indexing with a **multi-document storage and retrieval layer** designed for Italian legal documents. This is built on two foundations:
+PageIndex extends beyond single-document indexing with a **multi-document storage and retrieval layer** designed for Italian legal documents. The system provides a complete pipeline from PDF ingestion through to multi-strategy search.
 
-### Supabase Database Layer
+### Ingestion Pipeline
 
-A Supabase-backed data layer stores document metadata, text chunks with vector embeddings, and PageIndex tree structures:
+The `ingest()` method runs a **6-stage pipeline** that transforms a raw PDF into a fully indexed, searchable record:
+
+| Stage | Description |
+|-------|-------------|
+| 1. Tree Index | Builds a hierarchical tree structure via LLM reasoning |
+| 2. Metadata Extraction | LLM-based extraction of Italian legal metadata (doc_type, authority, ECLI, legal_area, parties) |
+| 3. Description Generation | LLM-based one-sentence document description |
+| 4. Chunking | Tree-aware recursive chunking that respects document structure |
+| 5. Embedding | Batch embedding with token-limit validation |
+| 6. Storage | Persists document, tree, chunks, and embeddings to Supabase |
+
+```python
+from pageindex import PageIndex
+
+pi = PageIndex(supabase_url="https://xxx.supabase.co", supabase_key="xxx")
+
+result = pi.ingest(
+    path="/path/to/decreto_legislativo.pdf",
+    additional_fields={"source": "EUR-Lex", "year": 2024},
+)
+print(result.status)          # "succeeded"
+print(result.chunks_created)  # e.g. 142
+print(result.document_id)     # UUID
+```
+
+### Search Strategies
+
+PageIndex supports four retrieval strategies. In `"auto"` mode (default), an LLM classifies the query intent and selects the optimal strategy automatically.
+
+| Strategy | Description | Best for |
+|----------|-------------|----------|
+| `metadata` | Structured filter search on legal fields | "decreti legislativi del 2023 in materia civile" |
+| `semantic` | Vector similarity search over chunk embeddings | "principio di proporzionalità nelle sanzioni" |
+| `hybrid` | Fuses metadata + semantic + description via Reciprocal Rank Fusion | Broad queries mixing structure and meaning |
+| `auto` | LLM-based intent classification → dispatches to above | General use (recommended) |
+
+```python
+# Automatic strategy selection (default)
+resp = pi.search("sentenze penali della Cassazione 2023")
+print(resp.strategy_used)  # e.g. "hybrid"
+print(resp.reasoning)      # LLM's strategy reasoning
+
+# Force a specific strategy
+resp = pi.search("art. 2043 codice civile", strategy="metadata")
+
+# Engine-specific searches (bypass strategy orchestration)
+results = pi.search_semantic("principio di proporzionalità", limit=5)
+results = pi.search_metadata("decreti legislativi 2023", limit=10)
+results = pi.search_description("riforma del processo penale", limit=5)
+results = pi.search_tree("clausola di salvaguardia", doc_ids=["uuid-1", "uuid-2"])
+```
+
+### Configuration
+
+PageIndex uses a **layered configuration system** with four priority levels (highest wins):
+
+1. **Constructor kwargs** — `PageIndex(llm={"completion_model": "..."})`
+2. **Environment variables** — `PAGEINDEX_LLM__COMPLETION_MODEL=...` (prefix `PAGEINDEX_`, `__` for nesting)
+3. **YAML config file** — `pageindex/config.yaml`
+4. **Field defaults** — built-in sensible defaults
+
+The configuration is organized into four sub-models:
+
+| Sub-model | Key parameters | Defaults |
+|-----------|---------------|----------|
+| `supabase` | `url`, `key` | _(required — no defaults)_ |
+| `llm` | `completion_model`, `embedding_model`, `temperature` | `gemini/gemini-2.0-flash`, `gemini/gemini-embedding-001`, `0` |
+| `ingestion` | `chunk_max_tokens`, `chunk_overlap`, `max_embedding_batch` | `800`, `0.1`, `250` |
+| `retrieval` | `default_strategy`, `default_top_k`, `rrf_k` | `"auto"`, `10`, `60` |
+
+Three constructor forms are supported:
+
+```python
+from pageindex import PageIndex, PageIndexSettings
+
+# 1. Flat kwargs (convenience)
+pi = PageIndex(supabase_url="https://xxx.supabase.co", supabase_key="xxx")
+
+# 2. Nested dicts (explicit)
+pi = PageIndex(
+    supabase={"url": "https://xxx.supabase.co", "key": "xxx"},
+    llm={"completion_model": "openai/gpt-4o"},
+    retrieval={"default_strategy": "semantic", "default_top_k": 20},
+)
+
+# 3. Pre-built settings object (advanced)
+settings = PageIndexSettings(
+    supabase={"url": "https://xxx.supabase.co", "key": "xxx"},
+)
+pi = PageIndex(settings=settings)
+```
+
+For the most common env vars (Supabase connection), both the prefixed nested form (`PAGEINDEX_SUPABASE__URL`) and the standard flat form (`SUPABASE_URL`) are accepted.
+
+### Database Setup
+
+PageIndex stores data in [Supabase](https://supabase.com/) (PostgreSQL + pgvector). Three migrations set up the schema:
+
+| Migration | Creates |
+|-----------|---------|
+| `001_initial_schema.sql` | `documents`, `document_trees`, `chunks` tables; `match_chunks` RPC; pgvector extension |
+| `002_ingestion_status.sql` | Ingestion status tracking columns |
+| `003_retrieval.sql` | Retrieval-specific indexes and functions |
+
+Run the migrations in order in your Supabase SQL Editor (or via the Supabase CLI). The three core tables are:
 
 | Table | Purpose |
 |-------|---------|
@@ -227,35 +349,9 @@ A Supabase-backed data layer stores document metadata, text chunks with vector e
 | `chunks` | Text segments with `embedding vector(768)` for similarity search |
 | `document_trees` | Serialized PageIndex tree structures per document |
 
-```python
-from pageindex.db import insert_document, match_chunks
-
-# Register a new legal document
-doc = insert_document("decreto_123.pdf", metadata={
-    "doc_type": "decreto_legislativo",
-    "authority": "Parlamento",
-    "legal_area": "civile",
-})
-
-# Semantic search across all stored chunks
-results = match_chunks(query_embedding, match_count=5)
-```
-
 ### Provider-Agnostic LLM Abstraction
 
-All LLM calls go through a unified [LiteLLM](https://github.com/BerriAI/litellm) abstraction layer, supporting Gemini, OpenAI, Anthropic, and local models:
-
-```python
-from pageindex.utils import llm_complete, llm_embed
-
-# Completion (uses model from config.yaml, default: gemini/gemini-2.0-flash)
-answer = llm_complete([{"role": "user", "content": "Summarize this article"}])
-
-# Embedding (default: gemini/gemini-embedding-001, 768 dimensions)
-vectors = llm_embed(["text to embed"])
-```
-
-To switch providers, update `pageindex/config.yaml`:
+All LLM calls go through a unified [LiteLLM](https://github.com/BerriAI/litellm) abstraction layer, supporting Gemini, OpenAI, Anthropic, and local models. To switch providers, pass it as a constructor kwarg or update `pageindex/config.yaml`:
 
 ```yaml
 llm:
@@ -263,25 +359,64 @@ llm:
   embedding_model: "openai/text-embedding-3-small"
 ```
 
+### Exception Handling
+
+All PageIndex operations raise typed exceptions that can be caught at the desired granularity:
+
+```python
+from pageindex import PageIndex, PageIndexError, ConfigError, IngestionError, SearchError
+
+try:
+    pi = PageIndex(supabase_url="...", supabase_key="...")
+    pi.ingest(path="/path/to/doc.pdf")
+    pi.search("query")
+except ConfigError:
+    ...          # Invalid or missing configuration
+except IngestionError:
+    ...          # Document processing failed
+except SearchError:
+    ...          # Search operation failed
+except PageIndexError:
+    ...          # Any PageIndex error (base class)
+```
+
 ### Project Structure
 
 ```
 pageindex/
-├── page_index.py          # Core PDF tree structure generator
-├── page_index_md.py       # Markdown tree structure generator
-├── utils.py               # Shared utilities (includes llm_complete, llm_embed)
-├── config.yaml            # Model, tree, and Supabase settings
-├── db/                    # Supabase data access layer
-│   ├── client.py          #   Connection management
-│   ├── documents.py       #   Document CRUD operations
-│   ├── chunks.py          #   Chunk storage and vector search
-│   ├── trees.py           #   Tree structure persistence
-│   └── migrations/        #   SQL schema migrations
-├── llm/                   # Provider-agnostic LLM abstraction
-│   ├── provider.py        #   LLMProvider class (completion + embedding)
-│   └── config.py          #   LLM configuration loader
-└── schema/                # Reference data
-    └── legal_vocabulary.yaml  # Italian legal terminology
+├── __init__.py                # Public exports (PageIndex, exceptions, settings)
+├── api.py                     # PageIndex class facade, PageIndexSettings, return types
+├── exceptions.py              # Exception hierarchy (PageIndexError, ConfigError, ...)
+├── config.yaml                # Layered YAML configuration
+├── page_index.py              # Core PDF tree structure generator
+├── page_index_md.py           # Markdown tree structure generator
+├── utils.py                   # Shared utilities (ConfigLoader, llm_complete, llm_embed)
+├── db/                        # Supabase data access layer
+│   ├── client.py              #   Connection management
+│   ├── documents.py           #   Document CRUD operations
+│   ├── chunks.py              #   Chunk storage and vector search
+│   ├── trees.py               #   Tree structure persistence
+│   └── migrations/            #   SQL schema (001, 002, 003)
+├── ingestion/                 # 6-stage document processing pipeline
+│   ├── pipeline.py            #   Batch orchestration
+│   ├── stages.py              #   Sequential processing stages
+│   ├── chunker.py             #   Tree-aware recursive chunking
+│   ├── models.py              #   Pipeline data models (DocumentPipeline)
+│   └── prompts.py             #   LLM prompt templates & vocabulary
+├── llm/                       # Provider-agnostic LLM abstraction
+│   ├── provider.py            #   LLMProvider class (completion + embedding)
+│   └── config.py              #   LLM configuration loader
+├── retrieval/                 # Multi-strategy search engines
+│   ├── strategy.py            #   Strategy dispatcher (auto/metadata/semantic/hybrid)
+│   ├── semantic.py            #   Vector similarity search
+│   ├── metadata.py            #   Structured metadata filter search
+│   ├── description.py         #   Document description embedding search
+│   ├── tree_search.py         #   Tree-structure reasoning search
+│   ├── models.py              #   Result dataclasses (FusedResult, SearchResponse, ...)
+│   ├── config.py              #   Retrieval configuration loader
+│   └── prompts.py             #   LLM prompt templates
+└── schema/                    # Reference data
+    └── legal_vocabulary.yaml  #   Italian legal terminology
 ```
 
 <!--
