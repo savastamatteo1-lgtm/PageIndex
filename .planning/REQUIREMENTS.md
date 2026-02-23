@@ -24,8 +24,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Semantic Retrieval
 
 - [x] **SEM-01**: System chunks documents using tree leaf nodes as natural boundaries and generates embeddings stored in pgvector
-- [ ] **SEM-02**: User can search documents by semantic similarity using a query embedding against stored document chunk embeddings
-- [ ] **SEM-03**: System computes DocScore per document using the formula `DocScore = (1/sqrt(N+1)) * sum(ChunkScore(n))` to aggregate chunk relevance
+- [x] **SEM-02**: User can search documents by semantic similarity using a query embedding against stored document chunk embeddings
+- [x] **SEM-03**: System computes DocScore per document using the formula `DocScore = (1/sqrt(N+1)) * sum(ChunkScore(n))` to aggregate chunk relevance
 
 ### Tree Search
 
@@ -87,8 +87,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | META-02 | Phase 3 | Complete |
 | META-03 | Phase 3 | Complete |
 | SEM-01 | Phase 2 | Complete |
-| SEM-02 | Phase 3 | Pending |
-| SEM-03 | Phase 3 | Pending |
+| SEM-02 | Phase 3 | Complete |
+| SEM-03 | Phase 3 | Complete |
 | TREE-01 | Phase 3 | Pending |
 | TREE-02 | Phase 3 | Pending |
 | STRAT-01 | Phase 4 | Pending |
