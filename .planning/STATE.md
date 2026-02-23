@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 5 of 5 (Public API)
-Plan: 2 of 3 in current phase
+Plan: 3 of 3 in current phase
 Status: In Progress
-Last activity: 2026-02-23 -- Completed 05-01 (foundation types)
+Last activity: 2026-02-23 -- Completed 05-02 (PageIndex class)
 
-Progress: [███-------] 33% (Phase 5: 1/3 plans)
+Progress: [███████---] 67% (Phase 5: 2/3 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 3min
-- Total execution time: 36min
+- Total execution time: 38min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [███-------] 33% (Phase 5: 1/3 plans)
 | 3 | 4 | 10min | 3min |
 | 3.1 | 1 | 2min | 2min |
 | 4 | 2 | 5min | 3min |
-| 5 | 1 | 5min | 5min |
+| 5 | 2 | 7min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 03.1-01 (2min), 04-01 (2min), 04-02 (3min), 05-01 (5min)
+- Last 5 plans: 04-01 (2min), 04-02 (3min), 05-01 (5min), 05-02 (2min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -51,6 +51,7 @@ Progress: [███-------] 33% (Phase 5: 1/3 plans)
 | Phase 04 P01 | 2min | 2 tasks | 4 files |
 | Phase 04 P02 | 3min | 2 tasks | 4 files |
 | Phase 05 P01 | 5min | 2 tasks | 3 files |
+| Phase 05 P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,10 @@ Recent decisions affecting current work:
 - [05-01]: model_validator(mode=before) accepts flat SUPABASE_URL/SUPABASE_KEY env vars as convenience fallback
 - [05-01]: field_validator rejects empty strings on required Supabase url/key to handle empty .env entries
 - [05-01]: RetrievalSettings extra="ignore" to handle extra YAML fields not in the settings model
+- [05-02]: Lazy imports inside PageIndex methods to avoid circular dependencies and heavy import-time side effects
+- [05-02]: Empty dict for _build_ingestion_config -- tree indexer uses its own ConfigLoader defaults
+- [05-02]: Text ingestion deferred with clear IngestionError -- pipeline only supports file paths
+- [05-02]: All public methods wrap errors in typed exceptions (SearchError/IngestionError/ConfigError)
 
 ### Pending Todos
 
@@ -120,5 +125,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-01-PLAN.md
-Resume file: .planning/phases/05-public-api/05-01-SUMMARY.md
+Stopped at: Completed 05-02-PLAN.md
+Resume file: .planning/phases/05-public-api/05-02-SUMMARY.md
