@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Given a legal query, find the right documents from a large corpus and extract the precise relevant sections -- combining structured metadata filtering with semantic understanding and reasoning-based retrieval.
-**Current focus:** Phase 5: Public API
+**Current focus:** Phase 6: Public API Wiring & Cleanup
 
 ## Current Position
 
-Phase: 5 of 5 (Public API)
-Plan: 3 of 3 in current phase (COMPLETE)
-Status: Phase Complete
-Last activity: 2026-02-23 -- Completed 05-03 (Package surface cleanup)
+Phase: 6 of 6 (Public API Wiring & Cleanup)
+Plan: 1 of 2 in current phase
+Status: In Progress
+Last activity: 2026-02-23 -- Completed 06-01 (API wiring)
 
-Progress: [██████████] 100% (Phase 5: 3/3 plans)
+Progress: [█████████░] 50% (Phase 6: 1/2 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 3min
-- Total execution time: 40min
+- Total execution time: 43min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: [██████████] 100% (Phase 5: 3/3 plans)
 | 3.1 | 1 | 2min | 2min |
 | 4 | 2 | 5min | 3min |
 | 5 | 3 | 9min | 3min |
+| 6 | 1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (3min), 05-01 (5min), 05-02 (2min), 05-03 (2min)
+- Last 5 plans: 05-01 (5min), 05-02 (2min), 05-03 (2min), 06-01 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -53,6 +54,7 @@ Progress: [██████████] 100% (Phase 5: 3/3 plans)
 | Phase 05 P01 | 5min | 2 tasks | 3 files |
 | Phase 05 P02 | 2min | 2 tasks | 2 files |
 | Phase 05 P03 | 2min | 2 tasks | 3 files |
+| Phase 06 P01 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -115,6 +117,10 @@ Recent decisions affecting current work:
 - [05-03]: Star import removed from __init__.py -- page_index module still accessible as submodule but function no longer at package level
 - [05-03]: llm_complete/llm_embed removed as unused aliases -- new code uses PageIndex class API
 - [05-03]: run_pageindex.py keeps tree-indexing imports since CLI is for tree indexing, not search/retrieval
+- [06-01]: Flat kwargs use pop() to avoid pydantic extra-field rejection -- supabase_url/supabase_key restructured in model_validator
+- [06-01]: Retrieval overrides passed as dict merged into cfg, not as individual params -- forward-compatible with new settings
+- [06-01]: Runner functions accept cfg kwarg with None fallback to load_retrieval_config() -- avoids breaking internal callers
+- [06-01]: Only 'model' key in _build_ingestion_config return -- other keys trigger ConfigLoader._validate_keys() ValueError
 
 ### Pending Todos
 
@@ -129,5 +135,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-03-PLAN.md (Phase 5 complete, all phases complete)
-Resume file: .planning/phases/05-public-api/05-03-SUMMARY.md
+Stopped at: Completed 06-01-PLAN.md
+Resume file: .planning/phases/06-public-api-wiring-cleanup/06-01-SUMMARY.md
