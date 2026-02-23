@@ -112,10 +112,12 @@ Plans:
   2. The API accepts configuration (Supabase URL, LLM provider, embedding model) via config file or constructor arguments without requiring code changes
   3. A new user can install the package, configure credentials, ingest a document, and run a search query with fewer than 10 lines of Python
   4. `pageindex/__init__.py` re-exports all public API functions (ingest, search, retrieve) and subsystem entry points
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md -- pydantic-settings model (PageIndexSettings), exception hierarchy, public return types (SearchResponse, IngestionResult, DocumentInfo)
+- [ ] 05-02-PLAN.md -- PageIndex class with all public methods (search, ingest, retrieve) and subsystem singleton wiring
+- [ ] 05-03-PLAN.md -- Package cleanup (__init__.py explicit exports, legacy removal) and run_pageindex.py migration
 
 ## Progress
 
