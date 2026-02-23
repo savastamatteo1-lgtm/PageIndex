@@ -4,7 +4,11 @@ Public API::
 
     from pageindex import PageIndex, SearchResponse, IngestionResult
 
+    # Flat kwargs (convenience):
     pi = PageIndex(supabase_url='...', supabase_key='...')
+    # Nested dict (explicit):
+    pi = PageIndex(supabase={"url": "...", "key": "..."})
+
     results = pi.search("sentenze della Corte di Cassazione 2020")
     print(results.strategy_used, results.timing)
 

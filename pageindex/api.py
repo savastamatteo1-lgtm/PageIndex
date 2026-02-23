@@ -510,6 +510,32 @@ class PageIndex:
         except Exception as exc:
             raise SearchError(f"Tree search failed: {exc}") from exc
 
+    def search_description(
+        self, query: str, *, limit: int | None = None
+    ) -> list:
+        """Direct description (embedding similarity) search.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        limit : int | None
+            Max results.  Defaults to ``retrieval.default_top_k``.
+
+        Returns
+        -------
+        list[DescriptionResult]
+            Ranked results from the description engine.
+        """
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.description import search_description as _search_desc
+
+        effective_limit = limit or self._settings.retrieval.default_top_k
+        try:
+            return _search_desc(query, limit=effective_limit)
+        except Exception as exc:
+            raise SearchError(f"Description search failed: {exc}") from exc
+
     # ------------------------------------------------------------------
     # Ingestion
     # ------------------------------------------------------------------
