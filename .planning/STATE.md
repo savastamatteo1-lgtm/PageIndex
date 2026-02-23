@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Given a legal query, find the right documents from a large corpus and extract the precise relevant sections -- combining structured metadata filtering with semantic understanding and reasoning-based retrieval.
-**Current focus:** Phase 3.1: Ingestion Integration Fixes (gap closure)
+**Current focus:** Phase 4: Strategy Orchestration
 
 ## Current Position
 
-Phase: 3.1 of 5 (Ingestion Integration Fixes)
-Plan: 1 of 1 in current phase
-Status: Phase 3.1 complete
-Last activity: 2026-02-23 -- Completed 03.1-01 (Config separation + description embedding wiring)
+Phase: 4 of 5 (Strategy Orchestration)
+Plan: 0 of 0 in current phase
+Status: Context gathered, ready for planning
+Last activity: 2026-02-23 -- Phase 4 context gathered
 
 Progress: [██████████] 100% (Phase 3.1: 1/1 plans)
 
@@ -105,5 +105,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 03.1-01-PLAN.md (Phase 3.1 complete)
-Resume file: .planning/phases/03.1-ingestion-integration-fixes/03.1-01-SUMMARY.md
+Stopped at: Phase 4 context gathered
+Resume file: .planning/phases/04-strategy-orchestration/04-CONTEXT.md
