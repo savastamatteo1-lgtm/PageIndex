@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **FOUND-02**: System implements Italian legal metadata schema with fields: `doc_type`, `date`, `authority`, `ecli`, `gu_number`, `legal_area`, `parties`, `court_level`, `cross_references`, plus flexible JSONB for additional fields
 - [x] **FOUND-03**: System uses LiteLLM as provider-agnostic LLM abstraction layer supporting Gemini, OpenAI, Anthropic, and local models without code changes
 - [x] **FOUND-04**: System provides a batch ingestion pipeline that processes PDFs through: tree indexing → metadata extraction → embedding generation → Supabase storage
-- [ ] **FOUND-05**: System exposes a Python library API for programmatic integration (`ingest`, `search`, `retrieve` as core operations)
+- [x] **FOUND-05**: System exposes a Python library API for programmatic integration (`ingest`, `search`, `retrieve` as core operations)
 
 ### Metadata Retrieval
 
@@ -82,7 +82,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 3.1 | Complete |
-| FOUND-05 | Phase 5 | Pending |
+| FOUND-05 | Phase 5 | Complete |
 | META-01 | Phase 3 | Complete |
 | META-02 | Phase 3 | Complete |
 | META-03 | Phase 3 | Complete |
