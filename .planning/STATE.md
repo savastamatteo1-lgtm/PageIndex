@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 5 of 5 (Public API)
-Plan: 3 of 3 in current phase
-Status: In Progress
-Last activity: 2026-02-23 -- Completed 05-02 (PageIndex class)
+Plan: 3 of 3 in current phase (COMPLETE)
+Status: Phase Complete
+Last activity: 2026-02-23 -- Completed 05-03 (Package surface cleanup)
 
-Progress: [███████---] 67% (Phase 5: 2/3 plans)
+Progress: [██████████] 100% (Phase 5: 3/3 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 3min
-- Total execution time: 38min
+- Total execution time: 40min
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [███████---] 67% (Phase 5: 2/3 plans)
 | 3 | 4 | 10min | 3min |
 | 3.1 | 1 | 2min | 2min |
 | 4 | 2 | 5min | 3min |
-| 5 | 2 | 7min | 4min |
+| 5 | 3 | 9min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (2min), 04-02 (3min), 05-01 (5min), 05-02 (2min)
+- Last 5 plans: 04-02 (3min), 05-01 (5min), 05-02 (2min), 05-03 (2min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -52,6 +52,7 @@ Progress: [███████---] 67% (Phase 5: 2/3 plans)
 | Phase 04 P02 | 3min | 2 tasks | 4 files |
 | Phase 05 P01 | 5min | 2 tasks | 3 files |
 | Phase 05 P02 | 2min | 2 tasks | 2 files |
+| Phase 05 P03 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Recent decisions affecting current work:
 - [05-02]: Empty dict for _build_ingestion_config -- tree indexer uses its own ConfigLoader defaults
 - [05-02]: Text ingestion deferred with clear IngestionError -- pipeline only supports file paths
 - [05-02]: All public methods wrap errors in typed exceptions (SearchError/IngestionError/ConfigError)
+- [05-03]: Star import removed from __init__.py -- page_index module still accessible as submodule but function no longer at package level
+- [05-03]: llm_complete/llm_embed removed as unused aliases -- new code uses PageIndex class API
+- [05-03]: run_pageindex.py keeps tree-indexing imports since CLI is for tree indexing, not search/retrieval
 
 ### Pending Todos
 
@@ -125,5 +129,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 05-02-PLAN.md
-Resume file: .planning/phases/05-public-api/05-02-SUMMARY.md
+Stopped at: Completed 05-03-PLAN.md (Phase 5 complete, all phases complete)
+Resume file: .planning/phases/05-public-api/05-03-SUMMARY.md
