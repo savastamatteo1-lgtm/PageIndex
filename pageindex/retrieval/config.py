@@ -15,6 +15,24 @@ import yaml
 # Hardcoded defaults
 # ---------------------------------------------------------------------------
 
+DEFAULT_STRATEGY: str = "auto"
+"""Default retrieval strategy when caller does not specify one."""
+
+RRF_K: int = 60
+"""RRF constant (dampening factor).  Higher values flatten rank differences."""
+
+ENGINE_WEIGHTS: dict[str, float] = {"metadata": 1.0, "semantic": 1.0, "description": 1.0}
+"""Per-engine weight multiplier for RRF fusion (default equal contribution)."""
+
+GLOBAL_MIN_SCORE: float = 0.01
+"""Minimum fused RRF score to include a result (RRF scores are small ~0.01-0.05)."""
+
+INTERNAL_FETCH_MULTIPLIER: int = 2
+"""Fetch this many times top_k from each engine before fusion."""
+
+METADATA_FALLBACK_THRESHOLD: int = 3
+"""Threshold for 'few results' in metadata-first fallback (triggers semantic supplement)."""
+
 DEFAULT_TOP_K: int = 10
 """Default number of results returned per retrieval query (user-overridable)."""
 
@@ -56,6 +74,12 @@ _CONFIG_PATH: Path = Path(__file__).parent.parent / "config.yaml"
 
 _RETRIEVAL_DEFAULTS: dict = {
     "default_top_k": DEFAULT_TOP_K,
+    "default_strategy": DEFAULT_STRATEGY,
+    "rrf_k": RRF_K,
+    "engine_weights": ENGINE_WEIGHTS,
+    "global_min_score": GLOBAL_MIN_SCORE,
+    "internal_fetch_multiplier": INTERNAL_FETCH_MULTIPLIER,
+    "metadata_fallback_threshold": METADATA_FALLBACK_THRESHOLD,
     "docscore_min_threshold": DOCSCORE_MIN_THRESHOLD,
     "metadata_min_threshold": METADATA_MIN_THRESHOLD,
     "description_min_threshold": DESCRIPTION_MIN_THRESHOLD,
