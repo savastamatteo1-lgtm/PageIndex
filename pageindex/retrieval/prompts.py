@@ -234,3 +234,69 @@ Tuo output precedente:
 Errore di validazione: {error}
 
 Correggi l'output rispettando lo schema JSON richiesto. Tutti i campi sono obbligatori (usa null per i campi non applicabili). Output ONLY the corrected JSON object."""
+
+
+# ---------------------------------------------------------------------------
+# Query intent classification
+# ---------------------------------------------------------------------------
+
+CLASSIFICATION_SYSTEM_PROMPT: str = """\
+You are a query intent classifier for an Italian legal document retrieval system.
+
+Classify the user's query into one of three categories:
+
+1. **structured** -- The query primarily asks for documents matching specific structured criteria.
+   Indicators: dates or date ranges, legal identifiers (ECLI, GU numbers, law numbers), \
+court/authority names, document type keywords (sentenza, decreto, ordinanza, circolare, legge, \
+regolamento, direttiva).
+
+2. **conceptual** -- The query asks about a legal topic, concept, or principle without specifying \
+structured identifiers.
+   Indicators: abstract legal questions, topical queries, "what is...", "how does...", \
+legal principle names, conceptual descriptions.
+
+3. **mixed** -- The query combines structured identifiers WITH conceptual/topical elements.
+   Example: "sentenze della Cassazione dal 2020 sulla responsabilita' medica"
+   (has doc_type + court + date range + legal topic)
+
+Rules:
+- If the query has ANY structured indicator AND a conceptual element, classify as "mixed".
+- If the query has ONLY structured indicators, classify as "structured".
+- If the query has NO structured indicators, classify as "conceptual".
+- List the specific structured indicators you detected.
+
+Output ONLY the JSON object."""
+"""System prompt for LLM query intent classification.
+
+Instructs the LLM to classify queries as ``structured``, ``conceptual``, or
+``mixed`` using explicit Italian legal indicator rules.
+"""
+
+CLASSIFICATION_SCHEMA: dict = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "query_classification",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "intent": {
+                    "type": "string",
+                    "enum": ["structured", "conceptual", "mixed"],
+                },
+                "reasoning": {"type": "string"},
+                "structured_indicators": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+            },
+            "required": ["intent", "reasoning", "structured_indicators"],
+            "additionalProperties": False,
+        },
+        "strict": True,
+    },
+}
+"""LiteLLM ``response_format`` dict for query classification structured output.
+
+Follows the same convention as :data:`FILTER_JSON_SCHEMA` above.  Fields:
+``intent`` (enum), ``reasoning`` (free text), ``structured_indicators`` (list).
+"""
