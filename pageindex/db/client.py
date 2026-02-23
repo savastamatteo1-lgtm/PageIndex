@@ -14,6 +14,18 @@ from supabase import Client, create_client
 _client: Client | None = None
 
 
+def reset_client() -> None:
+    """Reset the cached Supabase client, forcing re-initialization on next ``get_client()`` call.
+
+    Called by :meth:`PageIndex.__init__() <pageindex.api.PageIndex.__init__>`
+    when new credentials are provided via the constructor.  After env vars
+    are updated and this function is called, the next ``get_client()`` will
+    create a fresh client with the new credentials.
+    """
+    global _client
+    _client = None
+
+
 def get_client() -> Client:
     """Return the cached Supabase client, creating it on first call.
 
