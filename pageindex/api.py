@@ -14,6 +14,7 @@ Usage::
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
@@ -177,3 +178,96 @@ class PageIndexSettings(BaseSettings):
             env_settings,
             YamlConfigSettingsSource(settings_cls),
         )
+
+
+# ---------------------------------------------------------------------------
+# Public return types (stdlib dataclasses per project convention)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class SearchResponse:
+    """Public response from a PageIndex search operation.
+
+    This is distinct from the internal
+    :class:`pageindex.retrieval.models.SearchResponse` -- it adds ``query``,
+    ``timing``, and renames ``strategy`` to ``strategy_used`` for a cleaner
+    public API.
+
+    Attributes
+    ----------
+    results : list
+        :class:`~pageindex.retrieval.models.FusedResult` or
+        :class:`~pageindex.retrieval.models.RetrievalResult` subclass instances.
+    query : str
+        The original query string.
+    strategy_used : str
+        Which strategy was executed (``"metadata"``, ``"semantic"``,
+        ``"hybrid"``).
+    scores : dict
+        Engine-level score summary (e.g. engine gaps, result count).
+    timing : float
+        Elapsed seconds for the search call.
+    reasoning : str
+        For auto mode: LLM reasoning.  For manual: description of choice.
+    """
+
+    results: list
+    query: str
+    strategy_used: str
+    scores: dict = field(default_factory=dict)
+    timing: float = 0.0
+    reasoning: str = ""
+
+
+@dataclass
+class IngestionResult:
+    """Result of ingesting a single document.
+
+    Attributes
+    ----------
+    document_id : str
+        The ``doc_id`` assigned in Supabase.
+    document_name : str
+        The filename or document name.
+    chunks_created : int
+        Number of chunks stored in the vector table.
+    status : str
+        ``"succeeded"``, ``"failed"``, or ``"skipped"``.
+    error : str | None
+        Error message when ``status`` is ``"failed"``.
+    """
+
+    document_id: str
+    document_name: str
+    chunks_created: int
+    status: str
+    error: str | None = None
+
+
+@dataclass
+class DocumentInfo:
+    """Combined view of a stored document.
+
+    Returned by ``PageIndex.retrieve()`` to give a full picture of a
+    document without requiring multiple DB queries from the caller.
+
+    Attributes
+    ----------
+    doc_id : str
+        Document UUID.
+    name : str
+        Human-readable document name.
+    metadata : dict
+        Full document metadata row from the ``documents`` table.
+    tree : dict | None
+        Tree structure if available.
+    chunks : list[dict] | None
+        Optionally loaded chunk data.
+    """
+
+    doc_id: str
+    name: str
+    metadata: dict = field(default_factory=dict)
+    tree: dict | None = None
+    chunks: list[dict] | None = None
