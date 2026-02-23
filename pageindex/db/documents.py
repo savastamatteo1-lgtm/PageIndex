@@ -26,6 +26,7 @@ _METADATA_COLUMNS = {
     "description_embedding",
     "ingestion_status",
     "needs_review",
+    "updated_at",
 }
 
 

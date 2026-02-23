@@ -129,6 +129,43 @@ class MetadataFilter:
 
 
 # ---------------------------------------------------------------------------
+# Fusion & classification result types
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class QueryClassification:
+    """LLM classification of query intent."""
+
+    intent: str  # "structured", "conceptual", "mixed"
+    strategy: str  # Mapped: "metadata", "semantic", "hybrid"
+    reasoning: str  # LLM explanation
+    structured_indicators: list[str] = field(default_factory=list)
+
+
+@dataclass
+class FusedResult:
+    """Result from RRF fusion across multiple engines."""
+
+    doc_id: str
+    fused_score: float
+    metadata: dict
+    engine_scores: dict[str, float]  # {engine_name: original_score}
+    contributing_engines: list[str]  # ["metadata", "semantic", "description"]
+    confidence: str  # "high"/"medium"/"low" based on fused_score
+
+
+@dataclass
+class SearchResponse:
+    """Top-level response from the strategy dispatcher."""
+
+    results: list  # FusedResult or RetrievalResult subclasses
+    strategy: str  # "metadata", "semantic", "hybrid"
+    reasoning: str  # Auto mode: LLM reasoning; manual: "User-selected strategy: X"
+    engine_gaps: list[str] = field(default_factory=list)  # Engines that returned 0 results
+
+
+# ---------------------------------------------------------------------------
 # Confidence assignment helper
 # ---------------------------------------------------------------------------
 
