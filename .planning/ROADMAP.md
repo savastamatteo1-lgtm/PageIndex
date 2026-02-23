@@ -80,10 +80,10 @@ Plans:
   1. `ingest()` processes documents without `ConfigLoader._validate_keys()` raising ValueError on ingestion-specific keys
   2. After ingestion, every document has a non-NULL `description_embedding` in the database, and `search_description()` returns results for matching queries
   3. Ingestion-specific config keys (`metadata_pages`, `chunk_max_tokens`, `chunk_overlap`) are separated from tree-indexer config before `stage_tree_index` is called
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 03.1-01-PLAN.md -- TBD
+- [ ] 03.1-01-PLAN.md -- Config namespace separation (ISSUE-01) and description embedding data flow (ISSUE-02)
 
 ### Phase 4: Strategy Orchestration
 **Goal**: Users can select how retrieval works per query, and the system intelligently combines or routes between retrieval engines
