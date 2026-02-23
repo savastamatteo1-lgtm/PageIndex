@@ -242,11 +242,12 @@ def _embed_batch(llm_provider: LLMProvider, texts: list[str]) -> list[list[float
 def stage_embed(
     pipeline: DocumentPipeline,
     llm_provider: LLMProvider,
+    embed_batch_size: int = _EMBED_BATCH_SIZE,
 ) -> None:
     """Generate embeddings for all chunks.
 
     Builds contextual embedding text (metadata prefix + tree path + content)
-    for each chunk, validates token limits, and embeds in batches of 250.
+    for each chunk, validates token limits, and embeds in batches.
 
     Parameters
     ----------
@@ -254,6 +255,8 @@ def stage_embed(
         Must have ``chunks``, ``metadata``, ``doc_name``, and ``description`` set.
     llm_provider : LLMProvider
         Provides ``embed()`` and ``count_tokens()`` methods.
+    embed_batch_size : int
+        Number of texts per embedding API call (default 250).
     """
     # Build combined metadata dict for embedding text builder
     combined_metadata = {
@@ -317,10 +320,10 @@ def stage_embed(
 
         embedding_texts.append(embed_text)
 
-    # Batch embed (Gemini API limit: 250 texts per call)
+    # Batch embed
     all_embeddings: list[list[float]] = []
-    for i in range(0, len(embedding_texts), _EMBED_BATCH_SIZE):
-        batch = embedding_texts[i : i + _EMBED_BATCH_SIZE]
+    for i in range(0, len(embedding_texts), embed_batch_size):
+        batch = embedding_texts[i : i + embed_batch_size]
         batch_embeddings = _embed_batch(llm_provider, batch)
         all_embeddings.extend(batch_embeddings)
 
@@ -405,6 +408,8 @@ def process_single_document(
     metadata_pages: int = 3,
     chunk_max_tokens: int = 800,
     chunk_overlap: float = 0.1,
+    embed_batch_size: int = _EMBED_BATCH_SIZE,
+    additional_fields: dict | None = None,
 ) -> DocumentPipeline:
     """Process a single PDF through all 6 pipeline stages.
 
@@ -430,6 +435,11 @@ def process_single_document(
         Maximum tokens per chunk (default 800).
     chunk_overlap : float
         Overlap ratio between consecutive sub-chunks (default 0.1).
+    embed_batch_size : int
+        Number of texts per embedding API call (default 250).
+    additional_fields : dict | None
+        User-provided overflow metadata to store in the document's
+        ``additional_fields`` JSONB column.
 
     Returns
     -------
@@ -448,6 +458,10 @@ def process_single_document(
     doc_row = insert_document(pipeline.doc_name, {"ingestion_status": "processing"})
     pipeline.doc_id = doc_row["doc_id"]
 
+    # Store user-provided additional fields
+    if additional_fields:
+        update_document(pipeline.doc_id, {"additional_fields": additional_fields})
+
     # Stage 1: Tree indexing
     stage_tree_index(pipeline, config)
 
@@ -461,7 +475,7 @@ def process_single_document(
     stage_chunk(pipeline, llm_provider, max_tokens=chunk_max_tokens, overlap_ratio=chunk_overlap)
 
     # Stage 5: Embedding
-    stage_embed(pipeline, llm_provider)
+    stage_embed(pipeline, llm_provider, embed_batch_size=embed_batch_size)
 
     # Stage 6: Storage
     stage_store(pipeline)

@@ -607,6 +607,8 @@ class PageIndex:
                 metadata_pages=self._settings.ingestion.metadata_pages,
                 chunk_max_tokens=self._settings.ingestion.chunk_max_tokens,
                 chunk_overlap=self._settings.ingestion.chunk_overlap,
+                embed_batch_size=self._settings.ingestion.max_embedding_batch,
+                additional_fields=additional_fields,
             )
 
             return IngestionResult(
