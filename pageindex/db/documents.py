@@ -23,6 +23,7 @@ _METADATA_COLUMNS = {
     "cross_references",
     "additional_fields",
     "doc_description",
+    "description_embedding",
     "ingestion_status",
     "needs_review",
 }

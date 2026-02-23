@@ -326,6 +326,11 @@ def stage_embed(
 
     pipeline.embeddings = all_embeddings
 
+    # Embed description text for description-based search
+    if pipeline.description:
+        desc_embeddings = _embed_batch(llm_provider, [pipeline.description])
+        pipeline.description_embedding = desc_embeddings[0]
+
 
 # ---------------------------------------------------------------------------
 # Stage 6: Storage
@@ -353,6 +358,8 @@ def stage_store(pipeline: DocumentPipeline) -> None:
                 update_fields[key] = pipeline.metadata[key]
     if pipeline.description:
         update_fields["doc_description"] = pipeline.description
+    if pipeline.description_embedding:
+        update_fields["description_embedding"] = pipeline.description_embedding
     if pipeline.needs_review:
         update_fields["needs_review"] = True
 

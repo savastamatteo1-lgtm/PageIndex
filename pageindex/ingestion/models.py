@@ -56,6 +56,8 @@ class DocumentPipeline:
         Structured Italian legal metadata extracted by the LLM.
     description : str | None
         LLM-generated one-sentence document description.
+    description_embedding : list[float] | None
+        Embedding vector for the description text, used by ``search_description()``.
     needs_review : bool
         ``True`` if metadata extraction was incomplete (missing fields).
     chunks : list[ChunkData]
@@ -70,6 +72,7 @@ class DocumentPipeline:
     tree_json: dict | None = None
     metadata: dict | None = None
     description: str | None = None
+    description_embedding: list[float] | None = None
     needs_review: bool = False
     chunks: list[ChunkData] = field(default_factory=list)
     embeddings: list[list[float]] = field(default_factory=list)
