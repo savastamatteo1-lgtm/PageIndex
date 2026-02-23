@@ -1,0 +1,1581 @@
+{
+  "test_metadata": {
+    "document": "2023-annual-report-truncated.pdf",
+    "doc_id": "69074ec6-c2fa-4502-bed8-cca75c8a6156",
+    "total_chunks": 45,
+    "num_questions": 20,
+    "timestamp": "2026-02-23T16:11:58.797092+00:00"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "What was the federal funds rate target range maintained by the FOMC since its July 2023 meeting?",
+      "expected_answer": "5-1/4 to 5-1/2 percent",
+      "source_pages": [
+        9
+      ],
+      "answer_keywords": [
+        "5",
+        "5-1/4",
+        "5-1/2",
+        "5.25",
+        "5.5"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5068750763352229
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 1.195
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5068750763352229
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about a specific economic indicator (federal funds rate) and a specific entity (FOMC), but does not contain any legal document identifiers or keywords.",
+          "timing": 1.613
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7168,
+            0.6933,
+            0.6849,
+            0.6837,
+            0.6801
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "2Monetar y Policy and Economic\nDevelopments\nThe Federal Reser ve conducts the nation\u2019 s monetar y policy to promote maximum emplo yment, stable\nprices, and moderate long-ter m interest rates in the U.S. econom y. This section re views U.S. monetar y\npolicy and economic de velopments in 2023 b y prov",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.351
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.91
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.302
+        }
+      }
+    },
+    {
+      "id": 2,
+      "question": "What was the PCE price index 12-month change ending in January, as reported in the March 2024 summary?",
+      "expected_answer": "2.4 percent",
+      "source_pages": [
+        10
+      ],
+      "answer_keywords": [
+        "2.4",
+        "percent",
+        "PCE"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5213682114796436
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.356
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5213682114796436
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about an economic indicator (PCE price index) and a specific time period. It does not contain any legal document identifiers or legal concepts.",
+          "timing": 1.409
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7373,
+            0.6937,
+            0.6736,
+            0.6706,
+            0.6589
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "consumption expenditures (PCE) rose 2.4 percent o ver the 12 months ending in Januar y, down from a peak of 7.1 percent in 2022. The core PCE price index\u2014which excludes volatile food and energ y prices and is gener- ally considered a better guide to the direction of future inflation\u2014rose 2.8 percent",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.31
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.759
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.319
+        }
+      }
+    },
+    {
+      "id": 3,
+      "question": "What was the core PCE price index 12-month change ending in January?",
+      "expected_answer": "2.8 percent",
+      "source_pages": [
+        10
+      ],
+      "answer_keywords": [
+        "2.8",
+        "percent",
+        "core PCE"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.307
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks about a specific economic indicator (core PCE price index) and a time frame, but does not contain any legal document identifiers or legal concepts.",
+          "timing": 1.213
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.6542,
+            0.6073,
+            0.599,
+            0.5798,
+            0.5697
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "consumption expenditures (PCE) rose 2.4 percent o ver the 12 months ending in Januar y, down from a peak of 7.1 percent in 2022. The core PCE price index\u2014which excludes volatile food and energ y prices and is gener- ally considered a better guide to the direction of future inflation\u2014rose 2.8 percent",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.326
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.957
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.312
+        }
+      }
+    },
+    {
+      "id": 4,
+      "question": "What was the average monthly job gains since June according to the March 2024 summary?",
+      "expected_answer": "239,000 per month",
+      "source_pages": [
+        10
+      ],
+      "answer_keywords": [
+        "239,000",
+        "239000"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5045019554520972
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.37
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5045019554520972
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "This query asks a question about economic data and does not contain any legal identifiers or document type keywords.",
+          "timing": 2.334
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7135,
+            0.6849,
+            0.6836,
+            0.6755,
+            0.673
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "consumption expenditures (PCE) rose 2.4 percent o ver the 12 months ending in Januar y, down from a peak of 7.1 percent in 2022. The core PCE price index\u2014which excludes volatile food and energ y prices and is gener- ally considered a better guide to the direction of future inflation\u2014rose 2.8 percent",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.361
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.908
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.324
+        }
+      }
+    },
+    {
+      "id": 5,
+      "question": "By how much did real GDP increase in the last year according to the March 2024 summary?",
+      "expected_answer": "3.1 percent",
+      "source_pages": [
+        11
+      ],
+      "answer_keywords": [
+        "3.1",
+        "percent",
+        "GDP"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.0941415443945621
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.396
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.0941415443945621
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about economic data (GDP increase) and refers to a specific report (March 2024 summary), but it doesn't contain any legal document identifiers or legal concepts. Therefore, it's a conceptual query related to economic data, not legal documents.",
+          "timing": 1.525
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7557,
+            0.7188,
+            0.7138,
+            0.6988,
+            0.6944
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "consumption expenditures (PCE) rose 2.4 percent o ver the 12 months ending in Januar y, down from a peak of 7.1 percent in 2022. The core PCE price index\u2014which excludes volatile food and energ y prices and is gener- ally considered a better guide to the direction of future inflation\u2014rose 2.8 percent",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.324
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.83
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.372
+        }
+      }
+    },
+    {
+      "id": 6,
+      "question": "What was the total increase in the target range for the federal funds rate during the entire tightening cycle that began in early 2022?",
+      "expected_answer": "525 basis points",
+      "source_pages": [
+        11
+      ],
+      "answer_keywords": [
+        "525",
+        "basis points"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.4978674481082696
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.364
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.4978674481082696
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about a specific economic event (the increase in the federal funds rate) without specifying any legal document identifiers or structured criteria related to legal documents.",
+          "timing": 1.211
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7041,
+            0.6885,
+            0.6809,
+            0.6791,
+            0.6694
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "2Monetar y Policy and Economic\nDevelopments\nThe Federal Reser ve conducts the nation\u2019 s monetar y policy to promote maximum emplo yment, stable\nprices, and moderate long-ter m interest rates in the U.S. econom y. This section re views U.S. monetar y\npolicy and economic de velopments in 2023 b y prov",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.307
+        },
+        "tree_search": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "tree_search",
+          "timing": 0.443
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.304
+        }
+      }
+    },
+    {
+      "id": 7,
+      "question": "By how much did the Federal Reserve reduce its securities holdings since mid-June 2023?",
+      "expected_answer": "About $640 billion",
+      "source_pages": [
+        13
+      ],
+      "answer_keywords": [
+        "640",
+        "billion"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.338
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about the actions of the Federal Reserve, without specifying any legal document identifiers or types. It's a request for information, not a request for specific legal documents.",
+          "timing": 2.432
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.696,
+            0.6934,
+            0.6745,
+            0.6721,
+            0.6695
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "June 2023 Summar y\nAlthough inflation has moderated some what since the middle of last year , it remains w ell abo ve\nthe Federal Open Mar ket Committee\u2019 s (FOMC) objective of 2 percent. The labor mar ket continues\nto be ver y tight, with robust job gains and the unemplo yment rate near historically",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.325
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.925
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.316
+        }
+      }
+    },
+    {
+      "id": 8,
+      "question": "What was the total reduction in securities holdings since the start of balance sheet runoff?",
+      "expected_answer": "About $1.4 trillion",
+      "source_pages": [
+        13
+      ],
+      "answer_keywords": [
+        "1.4",
+        "trillion"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.318
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a general question about a financial concept (reduction in securities holdings) without specifying any legal document identifiers, dates, or authorities.",
+          "timing": 1.301
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.6456,
+            0.6423,
+            0.6383,
+            0.6317,
+            0.6297
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "goods inflation generally outpacing that in ser vices inflation. Most foreign central banks paused policy interest rate hik es in the second half of last year and have since held rates steady . Policy rate paths implied b y financial mar ket pricing suggest that central banks in man y AFEs are expec",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.327
+        },
+        "tree_search": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "tree_search",
+          "timing": 0.679
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.302
+        }
+      }
+    },
+    {
+      "id": 9,
+      "question": "What was the PCE inflation rate in April as reported in the June 2023 summary?",
+      "expected_answer": "4.4 percent",
+      "source_pages": [
+        15
+      ],
+      "answer_keywords": [
+        "4.4",
+        "percent"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.278384283680499
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.4
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.278384283680499
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "This query asks a question about an economic indicator (PCE inflation rate) and a specific report (June 2023 summary). It does not contain any legal identifiers or document type keywords.",
+          "timing": 1.269
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7368,
+            0.7126,
+            0.7087,
+            0.7004,
+            0.6869
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "June 2023 Summar y\nAlthough inflation has moderated some what since the middle of last year , it remains w ell abo ve\nthe Federal Open Mar ket Committee\u2019 s (FOMC) objective of 2 percent. The labor mar ket continues\nto be ver y tight, with robust job gains and the unemplo yment rate near historically",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.347
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.978
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.313
+        }
+      }
+    },
+    {
+      "id": 10,
+      "question": "What was the federal funds rate target range raised to by the June 2023 summary?",
+      "expected_answer": "5 to 5-1/4 percent",
+      "source_pages": [
+        15
+      ],
+      "answer_keywords": [
+        "5 to 5",
+        "5-1/4"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.2633999864991106
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.379
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.2633999864991106
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific economic indicator (federal funds rate) and a specific document (June 2023 summary), but does not contain any Italian legal structured identifiers.",
+          "timing": 2.762
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7146,
+            0.7062,
+            0.7032,
+            0.7011,
+            0.687
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "June 2023 Summar y\nAlthough inflation has moderated some what since the middle of last year , it remains w ell abo ve\nthe Federal Open Mar ket Committee\u2019 s (FOMC) objective of 2 percent. The labor mar ket continues\nto be ver y tight, with robust job gains and the unemplo yment rate near historically",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.321
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 1.099
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.305
+        }
+      }
+    },
+    {
+      "id": 11,
+      "question": "How many U.S. global systemically important banks (G-SIBs) are in the LISCC portfolio?",
+      "expected_answer": "Eight (8)",
+      "source_pages": [
+        32
+      ],
+      "answer_keywords": [
+        "8",
+        "eight",
+        "G-SIB"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.374
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific topic (number of U.S. G-SIBs in the LISCC portfolio) without providing any structured identifiers like dates, legal identifiers, or document types.",
+          "timing": 1.326
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.6739,
+            0.6377,
+            0.6251,
+            0.6119,
+            0.6027
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "Super vised and Regulated Institutions\nThe F ederal Reser ve categorizes banking organizations into por tfolios b y size and entity type, as\ndescribed in table 4.1 .\nState Member Banks\nAt year-end 2023, a total of 1,411 banks (excluding non-depositor y trust companies and private\nbanks) w ere member",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.407
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.4166666666666667
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.899
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.299
+        }
+      }
+    },
+    {
+      "id": 12,
+      "question": "How many state member banks existed at year-end 2023?",
+      "expected_answer": "706 state chartered banks (1,411 total member banks)",
+      "source_pages": [
+        32
+      ],
+      "answer_keywords": [
+        "706",
+        "1,411"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.09442259881592
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.452
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.09442259881592
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific fact (number of banks) at a specific time, but does not refer to any legal documents or identifiers. It's a request for information, not a request for legal documents based on structured criteria.",
+          "timing": 1.454
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7757,
+            0.7125,
+            0.7006,
+            0.6963,
+            0.6886
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "Super vised and Regulated Institutions\nThe F ederal Reser ve categorizes banking organizations into por tfolios b y size and entity type, as\ndescribed in table 4.1 .\nState Member Banks\nAt year-end 2023, a total of 1,411 banks (excluding non-depositor y trust companies and private\nbanks) w ere member",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.307
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.915
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.316
+        }
+      }
+    },
+    {
+      "id": 13,
+      "question": "How many U.S. bank holding companies were in operation at year-end 2023?",
+      "expected_answer": "3,794 bank holding companies",
+      "source_pages": [
+        33
+      ],
+      "answer_keywords": [
+        "3,794",
+        "3794"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.1040919938135856
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.401
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.1040919938135856
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about a specific type of entity (bank holding companies) but does not contain any legal identifiers, document types, or other structured criteria related to Italian law. It's a general knowledge question.",
+          "timing": 1.48
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7674,
+            0.7348,
+            0.706,
+            0.6846,
+            0.6832
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "wihniL oBp raz4Li14hirLs u9. 5N6 Insurance and commer cial sa vings and loan holding companies (SLHCs)SLHCs primarily engaged in insurance or commercial activities 5 insurance 4 commercial0.5 *Includes 104 holding companies and 1 state member bank that does not ha ve a holding compan y. ** Includes ",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.328
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.895
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.312
+        }
+      }
+    },
+    {
+      "id": 14,
+      "question": "How many savings and loan holding companies were in operation at year-end 2023?",
+      "expected_answer": "287 savings and loan holding companies",
+      "source_pages": [
+        33
+      ],
+      "answer_keywords": [
+        "287"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5291925816507067
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.345
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5291925816507067
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific type of financial institution at a specific time, but does not contain any legal identifiers or document type keywords. It's a request for a statistic, not a legal document.",
+          "timing": 1.352
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7484,
+            0.6702,
+            0.6474,
+            0.629,
+            0.6255
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "wihniL oBp raz4Li14hirLs u9. 5N6 Insurance and commer cial sa vings and loan holding companies (SLHCs)SLHCs primarily engaged in insurance or commercial activities 5 insurance 4 commercial0.5 *Includes 104 holding companies and 1 state member bank that does not ha ve a holding compan y. ** Includes ",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.324
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 1.018
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.496
+        }
+      }
+    },
+    {
+      "id": 15,
+      "question": "What was the total amount of civil money penalties assessed by the Federal Reserve in 2023?",
+      "expected_answer": "$542,329,952.20",
+      "source_pages": [
+        42
+      ],
+      "answer_keywords": [
+        "542,329,952",
+        "542329952"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5149507127744447
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.387
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5149507127744447
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific amount related to penalties, but does not contain any Italian legal structured identifiers (ECLI, GU numbers, law numbers), court/authority names, or document type keywords. It is a conceptual question about a monetary value.",
+          "timing": 1.457
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7283,
+            0.6824,
+            0.6817,
+            0.6796,
+            0.6778
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "and super visors to identify , measure, monitor , and manage climate-related financial risks. As described in the Participant Instructions released on Januar y 17, 2023, the exercise considered the impact of ph ysical and transition risk scenarios of varying le vels of se verity on par ticipating ba",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.353
+        },
+        "tree_search": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "tree_search",
+          "timing": 0.897
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.35
+        }
+      }
+    },
+    {
+      "id": 16,
+      "question": "How many formal enforcement actions did the Federal Reserve complete in 2023?",
+      "expected_answer": "63 formal enforcement actions",
+      "source_pages": [
+        42
+      ],
+      "answer_keywords": [
+        "63"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            1.4657986964845113
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.35
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            1.4657986964845113
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific type of action ('formal enforcement actions') and a specific institution ('Federal Reserve') within a time frame ('2023'), but does not provide any legal identifiers or document types. It's a request for information about a legal topic.",
+          "timing": 1.535
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7616,
+            0.7123,
+            0.7104,
+            0.7061,
+            0.7
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "and super visors to identify , measure, monitor , and manage climate-related financial risks. As described in the Participant Instructions released on Januar y 17, 2023, the exercise considered the impact of ph ysical and transition risk scenarios of varying le vels of se verity on par ticipating ba",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.34
+        },
+        "tree_search": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "tree_search",
+          "timing": 0.808
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.302
+        }
+      }
+    },
+    {
+      "id": 17,
+      "question": "What was the total value of stablecoin assets mentioned in the financial stability section?",
+      "expected_answer": "Around $125 billion",
+      "source_pages": [
+        28
+      ],
+      "answer_keywords": [
+        "125",
+        "billion",
+        "stablecoin"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.32
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific value mentioned in a section of a document. It does not contain any structured identifiers like dates, ECLI, or document types.",
+          "timing": 1.115
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.6987,
+            0.6928,
+            0.663,
+            0.6489,
+            0.6453
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "bond funds\u2014 continued to increase and remained at a historically high le vel. Rule changes for MMFs b y the Securities and Exchange Commission that w ent into effect in July 2023 represent refor ms to address the str uctural w eaknesses in this sector .Figure 3.6. Liquid assets held b y banks, 2001\u2013",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.32
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.16666666666666666
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.869
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.304
+        }
+      }
+    },
+    {
+      "id": 18,
+      "question": "How many examinations of state member banks did the Federal Reserve conduct in 2023?",
+      "expected_answer": "316 examinations",
+      "source_pages": [
+        35,
+        36
+      ],
+      "answer_keywords": [
+        "316"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            2.6932496944913242
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.408
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            2.6932496944913242
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about the number of examinations conducted by the Federal Reserve in a specific year. It does not contain any legal identifiers or document type keywords.",
+          "timing": 1.319
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.7934,
+            0.7889,
+            0.779,
+            0.7701,
+            0.767
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "pated with state and federal regulator y authorities in 684 examinations of foreign banks in 2023. Super visory Developments Super visory and Regulator y Initiatives The F ederal Reser ve\u2019s super vision activities include examinations and inspections to help ensure that financial institutions operat",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.298
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.903
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.334
+        }
+      }
+    },
+    {
+      "id": 19,
+      "question": "How much did the Board collect and transfer to the U.S. Treasury for the 2022 S&R Regulation TT assessment in 2023?",
+      "expected_answer": "$771,050,870 from 53 institutions",
+      "source_pages": [
+        43
+      ],
+      "answer_keywords": [
+        "771,050,870",
+        "771050870",
+        "53 institutions"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "timing": 0.424
+        },
+        "auto": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a question about a specific financial transaction related to a regulation, but does not provide any legal identifiers or document types. It's a request for information, not a request for specific documents.",
+          "timing": 1.264
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.6968,
+            0.6753,
+            0.675,
+            0.6719,
+            0.6633
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "ting for ms that are nor mally used b y publicly held entities to submit infor mation to the SEC.11 In 2023, one state member bank w as required to submit data to the F ederal Reser ve. These data are made a vailable upon request and are primarily used for disclosure to the bank\u2019 s shareholder s and",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.318
+        },
+        "tree_search": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "tree_search",
+          "timing": 0.815
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.315
+        }
+      }
+    },
+    {
+      "id": 20,
+      "question": "When was the Federal Reserve created by an act of Congress?",
+      "expected_answer": "December 23, 1913",
+      "source_pages": [
+        5
+      ],
+      "answer_keywords": [
+        "December 23, 1913",
+        "1913"
+      ],
+      "results": {
+        "semantic": {
+          "num_results": 1,
+          "top_scores": [
+            0.5154969047425191
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "timing": 0.384
+        },
+        "auto": {
+          "num_results": 1,
+          "top_scores": [
+            0.5154969047425191
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "semantic",
+          "reasoning": "The query asks a factual question about the creation of the Federal Reserve without specifying any legal document identifiers or types. It's a general knowledge question about a legal topic.",
+          "timing": 1.262
+        },
+        "semantic_chunks": {
+          "num_results": 10,
+          "top_scores": [
+            0.729,
+            0.6277,
+            0.6186,
+            0.5945,
+            0.5783
+          ],
+          "answer_in_top1": true,
+          "answer_in_top3": true,
+          "answer_in_top5": true,
+          "top_result_preview": "About the F ederal Reser ve\nThe F ederal Reser ve was created b y an act of Congress on December 23, 1913, to pro vide the\nnation with a safer , more flexible, and more stable monetar y and financial system. In establishing\nthe Federal Reser ve System, the United States w as divided geographically i",
+          "strategy_used": "semantic_chunks",
+          "timing": 0.292
+        },
+        "tree_search": {
+          "num_results": 1,
+          "top_scores": [
+            0.08333333333333333
+          ],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "This Italian legal document details a dispute between specific parties, culminating in a distinct legal ruling or agreement that sets it apart from other similar cases.\n",
+          "strategy_used": "tree_search",
+          "timing": 0.782
+        },
+        "description": {
+          "num_results": 0,
+          "top_scores": [],
+          "answer_in_top1": false,
+          "answer_in_top3": false,
+          "answer_in_top5": false,
+          "top_result_preview": "",
+          "strategy_used": "description",
+          "timing": 0.293
+        }
+      }
+    }
+  ],
+  "summary": {
+    "semantic": {
+      "top1_accuracy": 0.0,
+      "top3_accuracy": 0.0,
+      "top5_accuracy": 0.0,
+      "top1_count": 0,
+      "top3_count": 0,
+      "top5_count": 0,
+      "total_questions": 20,
+      "avg_timing": 0.413,
+      "questions_tested": 20
+    },
+    "auto": {
+      "top1_accuracy": 0.0,
+      "top3_accuracy": 0.0,
+      "top5_accuracy": 0.0,
+      "top1_count": 0,
+      "top3_count": 0,
+      "top5_count": 0,
+      "total_questions": 20,
+      "avg_timing": 1.532,
+      "questions_tested": 20
+    },
+    "semantic_chunks": {
+      "top1_accuracy": 0.95,
+      "top3_accuracy": 1.0,
+      "top5_accuracy": 1.0,
+      "top1_count": 19,
+      "top3_count": 20,
+      "top5_count": 20,
+      "total_questions": 20,
+      "avg_timing": 0.329,
+      "questions_tested": 20
+    },
+    "tree_search": {
+      "top1_accuracy": 0.0,
+      "top3_accuracy": 0.0,
+      "top5_accuracy": 0.0,
+      "top1_count": 0,
+      "top3_count": 0,
+      "top5_count": 0,
+      "total_questions": 20,
+      "avg_timing": 0.864,
+      "questions_tested": 20
+    },
+    "description": {
+      "top1_accuracy": 0.0,
+      "top3_accuracy": 0.0,
+      "top5_accuracy": 0.0,
+      "top1_count": 0,
+      "top3_count": 0,
+      "top5_count": 0,
+      "total_questions": 20,
+      "avg_timing": 0.325,
+      "questions_tested": 20
+    }
+  }
+}

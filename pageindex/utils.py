@@ -11,8 +11,6 @@ retrieval operations::
     pi = PageIndex(supabase_url='...', supabase_key='...')
 """
 
-from google import genai
-from google.genai import types
 import logging
 import os
 from datetime import datetime
@@ -30,8 +28,17 @@ import yaml
 from pathlib import Path
 from types import SimpleNamespace as config
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-_gemini_client = genai.Client(api_key=GOOGLE_API_KEY)
+_gemini_client = None
+
+
+def _get_gemini_client():
+    """Return the google-genai client, creating it lazily on first call."""
+    global _gemini_client
+    if _gemini_client is None:
+        from google import genai
+        api_key = os.getenv("GOOGLE_API_KEY")
+        _gemini_client = genai.Client(api_key=api_key)
+    return _gemini_client
 
 
 def count_tokens(text, model=None):
@@ -48,7 +55,7 @@ def count_tokens(text, model=None):
         return provider.count_tokens(text, model=model)
     except Exception:
         # Fallback to direct google-genai SDK
-        result = _gemini_client.models.count_tokens(
+        result = _get_gemini_client().models.count_tokens(
             model=model or "gemini-3.1-pro-preview",
             contents=text,
         )
@@ -57,6 +64,7 @@ def count_tokens(text, model=None):
 
 def _build_gemini_contents(chat_history, prompt):
     """Convert OpenAI-style chat history + prompt into Gemini Content objects."""
+    from google.genai import types
     contents = []
     if chat_history:
         for msg in chat_history:
@@ -71,8 +79,10 @@ def _build_gemini_contents(chat_history, prompt):
 
 
 def Gemini_API_with_finish_reason(model, prompt, api_key=None, chat_history=None):
+    from google.genai import types
     max_retries = 10
-    client = genai.Client(api_key=api_key) if api_key else _gemini_client
+    from google import genai
+    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
     for i in range(max_retries):
         try:
             contents = _build_gemini_contents(chat_history, prompt)
@@ -100,8 +110,10 @@ ChatGPT_API_with_finish_reason = Gemini_API_with_finish_reason
 
 
 def Gemini_API(model, prompt, api_key=None, chat_history=None):
+    from google.genai import types
     max_retries = 10
-    client = genai.Client(api_key=api_key) if api_key else _gemini_client
+    from google import genai
+    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
     for i in range(max_retries):
         try:
             contents = _build_gemini_contents(chat_history, prompt)
@@ -125,7 +137,9 @@ ChatGPT_API = Gemini_API
 
 async def Gemini_API_async(model, prompt, api_key=None):
     max_retries = 10
-    client = genai.Client(api_key=api_key) if api_key else _gemini_client
+    from google import genai
+    from google.genai import types
+    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
     contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
     for i in range(max_retries):
         try:
@@ -237,7 +251,7 @@ def structure_to_list(structure):
     
 def get_leaf_nodes(structure):
     if isinstance(structure, dict):
-        if not structure['nodes']:
+        if not structure.get('nodes'):
             structure_node = copy.deepcopy(structure)
             structure_node.pop('nodes', None)
             return [structure_node]

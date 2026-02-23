@@ -373,7 +373,7 @@ class PageIndex:
         self,
         query: str,
         *,
-        strategy: str = "auto",
+        strategy: str | None = None,
         limit: int | None = None,
     ) -> SearchResponse:
         """Run a multi-strategy search.
@@ -382,8 +382,9 @@ class PageIndex:
         ----------
         query : str
             Natural-language search query.
-        strategy : str
+        strategy : str | None
             One of ``"auto"``, ``"metadata"``, ``"semantic"``, ``"hybrid"``.
+            Defaults to ``retrieval.default_strategy`` (typically ``"auto"``).
         limit : int | None
             Max results.  Defaults to ``retrieval.default_top_k``.
 
@@ -401,12 +402,13 @@ class PageIndex:
         from pageindex.retrieval.strategy import search as strategy_search
 
         effective_limit = limit or self._settings.retrieval.default_top_k
+        effective_strategy = strategy or self._settings.retrieval.default_strategy
 
         try:
             t0 = time.perf_counter()
             internal = strategy_search(
                 query,
-                strategy=strategy,
+                strategy=effective_strategy,
                 limit=effective_limit,
                 retrieval_overrides=self._settings.retrieval.model_dump(),
             )
@@ -630,8 +632,15 @@ class PageIndex:
         Only valid top-level ``config.yaml`` keys are safe here -- adding
         nested keys like ``llm`` or ``retrieval`` would trigger
         ``ConfigLoader._validate_keys()`` ValueError (Pitfall 1).
+
+        The LiteLLM provider prefix (``gemini/``) is stripped because tree
+        indexing calls the Google GenAI SDK directly, not via LiteLLM.
         """
-        return {"model": self._settings.llm.completion_model}
+        model = self._settings.llm.completion_model
+        # Strip LiteLLM provider prefix for direct GenAI SDK calls
+        if "/" in model:
+            model = model.split("/", 1)[1]
+        return {"model": model}
 
     # ------------------------------------------------------------------
     # Retrieval

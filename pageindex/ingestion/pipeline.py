@@ -87,6 +87,8 @@ def _process_with_rollback(
     metadata_pages: int = 3,
     chunk_max_tokens: int = 800,
     chunk_overlap: float = 0.1,
+    embed_batch_size: int = 250,
+    additional_fields: dict | None = None,
 ) -> DocumentPipeline:
     """Process a single document and roll back on failure.
 
@@ -108,6 +110,10 @@ def _process_with_rollback(
         Maximum tokens per chunk (default 800).
     chunk_overlap : float
         Overlap ratio between consecutive sub-chunks (default 0.1).
+    embed_batch_size : int
+        Maximum number of texts per embedding API call (default 250).
+    additional_fields : dict | None
+        Extra key-value pairs to store alongside each document row.
 
     Returns
     -------
@@ -128,6 +134,8 @@ def _process_with_rollback(
             metadata_pages=metadata_pages,
             chunk_max_tokens=chunk_max_tokens,
             chunk_overlap=chunk_overlap,
+            embed_batch_size=embed_batch_size,
+            additional_fields=additional_fields,
         )
     except Exception:
         # Attempt rollback: if a document row was created, delete it
@@ -156,6 +164,8 @@ def ingest(
     metadata_pages: int | None = None,
     chunk_max_tokens: int | None = None,
     chunk_overlap: float | None = None,
+    embed_batch_size: int | None = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """Batch-process all PDFs in *directory* through the ingestion pipeline.
 
@@ -181,6 +191,11 @@ def ingest(
     chunk_overlap : float, optional
         Overlap ratio between consecutive sub-chunks.  Defaults to the
         value in ``config.yaml`` (typically 0.1).
+    embed_batch_size : int, optional
+        Maximum number of texts per embedding API call.  Defaults to the
+        value in ``config.yaml`` (typically 250).
+    additional_fields : dict, optional
+        Extra key-value pairs to store alongside each document row.
 
     Returns
     -------
@@ -194,6 +209,7 @@ def ingest(
     effective_metadata_pages = metadata_pages if metadata_pages is not None else cfg["metadata_pages"]
     effective_chunk_max_tokens = chunk_max_tokens if chunk_max_tokens is not None else cfg["chunk_max_tokens"]
     effective_chunk_overlap = chunk_overlap if chunk_overlap is not None else cfg["chunk_overlap"]
+    effective_embed_batch_size = embed_batch_size if embed_batch_size is not None else cfg["max_embedding_batch"]
 
     # 1. Discover PDFs
     dir_path = Path(directory)
@@ -247,6 +263,8 @@ def ingest(
                 metadata_pages=effective_metadata_pages,
                 chunk_max_tokens=effective_chunk_max_tokens,
                 chunk_overlap=effective_chunk_overlap,
+                embed_batch_size=effective_embed_batch_size,
+                additional_fields=additional_fields,
             ): path
             for path in to_process
         }
