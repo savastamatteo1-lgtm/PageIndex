@@ -89,10 +89,13 @@ Plans:
 **Goal**: Users can select how retrieval works per query, and the system intelligently combines or routes between retrieval engines
 **Depends on**: Phase 3
 **Requirements**: STRAT-01, STRAT-02, STRAT-03
+**Gap Closure**: Includes ISSUE-03 from v1.0 audit (add `retrieval:` section to config.yaml)
+**Tech Debt**: `updated_at` bypasses `_METADATA_COLUMNS` guard in `update_document()`
 **Success Criteria** (what must be TRUE):
   1. User can specify a retrieval strategy per query: `metadata`, `semantic`, `hybrid`, or `auto`
   2. When `hybrid` is selected, metadata and semantic results are combined using Reciprocal Rank Fusion and the merged ranking outperforms either strategy alone on mixed queries
   3. When `auto` is selected, the system detects structured indicators (dates, court names, ECLI) to route to metadata-first, and routes topical/conceptual queries to semantic-first
+  4. `retrieval:` section exists in config.yaml with tunable thresholds (score minimums, top-k limits) consumed by `load_retrieval_config()`
 **Plans**: TBD
 
 Plans:
@@ -102,10 +105,12 @@ Plans:
 **Goal**: A clean Python library API exposes all capabilities for programmatic integration
 **Depends on**: Phase 4
 **Requirements**: FOUND-05
+**Tech Debt**: Remove unused `llm_complete()`/`llm_embed()` aliases from utils.py; surface ingestion and retrieval subsystems in `pageindex/__init__.py`; wire `additional_fields` JSONB overflow bucket in ingestion or document it as reserved
 **Success Criteria** (what must be TRUE):
   1. User can `ingest` documents, `search` the corpus, and `retrieve` specific sections through typed Python functions importable from the `pageindex` package
   2. The API accepts configuration (Supabase URL, LLM provider, embedding model) via config file or constructor arguments without requiring code changes
   3. A new user can install the package, configure credentials, ingest a document, and run a search query with fewer than 10 lines of Python
+  4. `pageindex/__init__.py` re-exports all public API functions (ingest, search, retrieve) and subsystem entry points
 **Plans**: TBD
 
 Plans:

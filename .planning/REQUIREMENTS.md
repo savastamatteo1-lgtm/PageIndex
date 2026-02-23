@@ -102,7 +102,7 @@ Deferred to future release. Tracked but not in current roadmap.
 - v1 requirements: 19 total
 - Mapped to phases: 19
 - Unmapped: 0
-- Satisfied: 13/19 (2 reset by v1.0 audit, 4 pending in future phases)
+- Satisfied: 15/19 (4 pending in Phases 4 and 5)
 
 ---
 *Requirements defined: 2026-02-22*
