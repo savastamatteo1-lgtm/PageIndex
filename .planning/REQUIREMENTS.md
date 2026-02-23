@@ -18,8 +18,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Metadata Retrieval
 
 - [ ] **META-01**: User can search documents by natural language queries that get translated to SQL against the Italian legal metadata schema via LLM
-- [ ] **META-02**: System validates and sanitizes LLM-generated SQL queries before execution (read-only role, AST validation)
-- [ ] **META-03**: System injects the metadata schema into the LLM prompt so it generates correct column names and value types
+- [x] **META-02**: System validates and sanitizes LLM-generated SQL queries before execution (read-only role, AST validation)
+- [x] **META-03**: System injects the metadata schema into the LLM prompt so it generates correct column names and value types
 
 ### Semantic Retrieval
 
@@ -42,7 +42,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **ENRICH-01**: System automatically extracts Italian legal metadata (ECLI, court, date, legal area, parties, document type) from document text during ingestion via LLM
 - [x] **ENRICH-02**: System generates one-sentence LLM descriptions for each document during ingestion for description-based search
-- [ ] **ENRICH-03**: User can search documents by comparing query against LLM-generated descriptions (description-based search strategy)
+- [x] **ENRICH-03**: User can search documents by comparing query against LLM-generated descriptions (description-based search strategy)
 
 ## v2 Requirements
 
@@ -84,8 +84,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | FOUND-04 | Phase 2 | Complete |
 | FOUND-05 | Phase 5 | Pending |
 | META-01 | Phase 3 | Pending |
-| META-02 | Phase 3 | Pending |
-| META-03 | Phase 3 | Pending |
+| META-02 | Phase 3 | Complete |
+| META-03 | Phase 3 | Complete |
 | SEM-01 | Phase 2 | Complete |
 | SEM-02 | Phase 3 | Pending |
 | SEM-03 | Phase 3 | Pending |
@@ -96,7 +96,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | STRAT-03 | Phase 4 | Pending |
 | ENRICH-01 | Phase 2 | Complete |
 | ENRICH-02 | Phase 2 | Complete |
-| ENRICH-03 | Phase 3 | Pending |
+| ENRICH-03 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 19 total

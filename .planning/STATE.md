@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Given a legal query, find the right documents from a large corpus and extract the precise relevant sections -- combining structured metadata filtering with semantic understanding and reasoning-based retrieval.
-**Current focus:** Phase 2: Ingestion Pipeline
+**Current focus:** Phase 3: Retrieval Engines
 
 ## Current Position
 
-Phase: 2 of 5 (Ingestion Pipeline) -- COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase 2 complete, ready for Phase 3 planning
-Last activity: 2026-02-22 -- Completed 02-03 (Batch Orchestration)
+Phase: 3 of 5 (Retrieval Engines)
+Plan: 1 of 4 in current phase
+Status: Executing Phase 3 plans
+Last activity: 2026-02-23 -- Completed 03-01 (Shared Retrieval Foundation)
 
-Progress: [██████████] 100% (Phase 2: 3/3 plans)
+Progress: [██████░░░░] 25% (Phase 3: 1/4 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 3min
-- Total execution time: 14min
+- Total execution time: 17min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [██████████] 100% (Phase 2: 3/3 plans)
 |-------|-------|-------|----------|
 | 1 | 2 | 6min | 3min |
 | 2 | 3 | 8min | 3min |
+| 3 | 1 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3min), 01-02 (3min), 02-01 (3min), 02-02 (3min), 02-03 (2min)
+- Last 5 plans: 01-02 (3min), 02-01 (3min), 02-02 (3min), 02-03 (2min), 03-01 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -39,6 +40,7 @@ Progress: [██████████] 100% (Phase 2: 3/3 plans)
 | Phase 02 P01 | 3min | 2 tasks | 5 files |
 | Phase 02 P02 | 3min | 2 tasks | 4 files |
 | Phase 02 P03 | 2min | 2 tasks | 3 files |
+| Phase 03 P01 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -67,6 +69,9 @@ Recent decisions affecting current work:
 - [02-03]: Config override chain: hardcoded defaults -> config.yaml -> explicit function parameters (None-check pattern)
 - [02-03]: Rollback looks up document by name after failure rather than tracking doc_id through the call
 - [02-03]: ingest_errors.jsonl in append mode so consecutive runs accumulate error history
+- [03-01]: Stdlib dataclasses (not pydantic) for retrieval result types -- lightweight, zero dependencies
+- [03-01]: Per-engine confidence thresholds with conservative defaults since each engine has different score distributions
+- [03-01]: MetadataFilter.from_dict() silently ignores unknown keys and treats None as unset for LLM output resilience
 
 ### Pending Todos
 
@@ -80,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Completed 02-03-PLAN.md (Phase 2 complete)
-Resume file: .planning/phases/02-ingestion-pipeline/02-03-SUMMARY.md
+Last session: 2026-02-23
+Stopped at: Completed 03-01-PLAN.md
+Resume file: .planning/phases/03-retrieval-engines/03-01-SUMMARY.md

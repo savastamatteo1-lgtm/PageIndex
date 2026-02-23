@@ -65,7 +65,7 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Shared retrieval types (uniform result contract, MetadataFilter), config, migration 003 (pg_trgm, description_embedding, match_descriptions RPC)
+- [x] 03-01-PLAN.md -- Shared retrieval types (uniform result contract, MetadataFilter), config, migration 003 (pg_trgm, description_embedding, match_descriptions RPC)
 - [ ] 03-02-PLAN.md -- Metadata retrieval engine (LLM structured JSON filters, Supabase PostgREST query chains, filter-field scoring)
 - [ ] 03-03-PLAN.md -- Semantic search (DocScore aggregation) and description search (embedding similarity) engines with backfill utility
 - [ ] 03-04-PLAN.md -- Tree search engine (async concurrent multi-document wrapper) and retrieval package re-exports
@@ -105,6 +105,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Schema and LLM Abstraction | 2/2 | Complete    | 2026-02-22 |
 | 2. Ingestion Pipeline | 3/3 | Complete    | 2026-02-22 |
-| 3. Retrieval Engines | 0/4 | Planned | - |
+| 3. Retrieval Engines | 1/4 | In Progress | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
 | 5. Public API | 0/0 | Not started | - |
