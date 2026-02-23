@@ -96,10 +96,11 @@ Plans:
   2. When `hybrid` is selected, metadata and semantic results are combined using Reciprocal Rank Fusion and the merged ranking outperforms either strategy alone on mixed queries
   3. When `auto` is selected, the system detects structured indicators (dates, court names, ECLI) to route to metadata-first, and routes topical/conceptual queries to semantic-first
   4. `retrieval:` section exists in config.yaml with tunable thresholds (score minimums, top-k limits) consumed by `load_retrieval_config()`
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md -- Config extension (retrieval: YAML section, RRF/strategy defaults), fusion result types (FusedResult, SearchResponse, QueryClassification), and updated_at tech debt fix
+- [ ] 04-02-PLAN.md -- Strategy dispatcher with RRF fusion, LLM query intent classification, and per-strategy routing (metadata-first, semantic-first, hybrid)
 
 ### Phase 5: Public API
 **Goal**: A clean Python library API exposes all capabilities for programmatic integration
