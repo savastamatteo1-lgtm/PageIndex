@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3.1: Ingestion Integration Fixes** - Fix config key collision crashing ingest() and populate description embeddings during pipeline (INSERTED — gap closure) (completed 2026-02-23)
 - [x] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection (completed 2026-02-23)
 - [x] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration (completed 2026-02-23)
+- [ ] **Phase 6: Public API Wiring & Cleanup** - Thread all PageIndexSettings fields to subsystems, complete API surface, remove legacy artifacts (gap closure)
 
 ## Phase Details
 
@@ -119,10 +120,28 @@ Plans:
 - [ ] 05-02-PLAN.md -- PageIndex class with all public methods (search, ingest, retrieve) and subsystem singleton wiring
 - [ ] 05-03-PLAN.md -- Package cleanup (__init__.py explicit exports, legacy removal) and run_pageindex.py migration
 
+### Phase 6: Public API Wiring & Cleanup
+**Goal**: All PageIndexSettings fields are threaded through to subsystems, API surface is complete and symmetric, and legacy artifacts are cleaned up
+**Depends on**: Phase 5
+**Requirements**: None (all 19 requirements already satisfied — this is integration polish)
+**Gap Closure**: Closes ISSUE-05 through ISSUE-09 from v1.0 milestone audit + tech debt items
+**Success Criteria** (what must be TRUE):
+  1. `PageIndex(supabase_url='...', supabase_key='...')` flat-kwargs form works correctly (or docstring/examples updated to show the correct nested-dict syntax)
+  2. `PageIndexSettings.retrieval` fields (`rrf_k`, `engine_weights`, `global_min_score`, `internal_fetch_multiplier`) are applied by the retrieval engines at runtime
+  3. `PageIndex(llm={"completion_model": "..."})` override is respected by `stage_tree_index()` during ingestion
+  4. `PageIndex.search_description(query)` is a public method on the PageIndex class
+  5. `PageIndexSettings.ingestion.max_embedding_batch` controls `_EMBED_BATCH_SIZE` in stages.py
+  6. `additional_fields` parameter in `PageIndex.ingest()` is either wired through to `process_single_document()` or removed from the signature
+  7. `page_index_md.py` is removed or documented as an internal legacy module
+**Plans:** 0/0
+
+Plans:
+- [ ] 06-01-PLAN.md -- Config threading (retrieval settings, ingestion settings, tree-indexing model), API surface completion (search_description, flat kwargs), legacy cleanup
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5
+Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -132,3 +151,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5
 | 3.1. Ingestion Integration Fixes | 0/0 | Complete    | 2026-02-23 |
 | 4. Strategy Orchestration | 0/0 | Complete    | 2026-02-23 |
 | 5. Public API | 0/0 | Complete    | 2026-02-23 |
+| 6. Public API Wiring & Cleanup | 0/0 | Planned    | — |
