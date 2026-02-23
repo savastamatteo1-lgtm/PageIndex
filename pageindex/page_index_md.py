@@ -1,3 +1,16 @@
+"""INTERNAL LEGACY MODULE -- Markdown-based tree indexer.
+
+.. deprecated::
+    This module is a legacy implementation for Markdown files.
+    New code should use :class:`pageindex.PageIndex` for document
+    ingestion and retrieval. This module is not part of the public
+    API and may be removed in a future release.
+
+    For Markdown tree indexing, use ``md_to_tree()`` via::
+
+        from pageindex.page_index_md import md_to_tree
+        result = await md_to_tree(md_path, model='gemini/...')
+"""
 import asyncio
 import json
 import re
@@ -306,7 +319,7 @@ if __name__ == "__main__":
     MD_PATH = os.path.join(os.path.dirname(__file__), '..', 'tests/markdowns/', f'{MD_NAME}.md')
 
 
-    MODEL="gpt-4.1"
+    MODEL="gemini-3.1-pro-preview"
     IF_THINNING=False
     THINNING_THRESHOLD=5000
     SUMMARY_TOKEN_THRESHOLD=200
