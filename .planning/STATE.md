@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 6 of 6 (Public API Wiring & Cleanup)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-02-23 -- Completed 06-01 (API wiring)
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-02-23 -- Completed 06-02 (Ingestion settings wiring & legacy deprecation)
 
-Progress: [█████████░] 50% (Phase 6: 1/2 plans)
+Progress: [██████████] 100% (Phase 6: 2/2 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 3min
-- Total execution time: 43min
+- Total execution time: 45min
 
 **By Phase:**
 
@@ -33,10 +33,10 @@ Progress: [█████████░] 50% (Phase 6: 1/2 plans)
 | 3.1 | 1 | 2min | 2min |
 | 4 | 2 | 5min | 3min |
 | 5 | 3 | 9min | 3min |
-| 6 | 1 | 3min | 3min |
+| 6 | 2 | 5min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (5min), 05-02 (2min), 05-03 (2min), 06-01 (3min)
+- Last 5 plans: 05-02 (2min), 05-03 (2min), 06-01 (3min), 06-02 (2min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -55,6 +55,7 @@ Progress: [█████████░] 50% (Phase 6: 1/2 plans)
 | Phase 05 P02 | 2min | 2 tasks | 2 files |
 | Phase 05 P03 | 2min | 2 tasks | 3 files |
 | Phase 06 P01 | 3min | 2 tasks | 3 files |
+| Phase 06 P02 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,9 @@ Recent decisions affecting current work:
 - [06-01]: Retrieval overrides passed as dict merged into cfg, not as individual params -- forward-compatible with new settings
 - [06-01]: Runner functions accept cfg kwarg with None fallback to load_retrieval_config() -- avoids breaking internal callers
 - [06-01]: Only 'model' key in _build_ingestion_config return -- other keys trigger ConfigLoader._validate_keys() ValueError
+- [06-02]: embed_batch_size defaults to _EMBED_BATCH_SIZE constant for backward compatibility
+- [06-02]: additional_fields stored via update_document() after insert_document() to reuse existing DB function
+- [06-02]: page_index_md.py preserved with deprecation docstring rather than deleted for backward compatibility
 
 ### Pending Todos
 
@@ -135,5 +139,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed 06-01-PLAN.md
-Resume file: .planning/phases/06-public-api-wiring-cleanup/06-01-SUMMARY.md
+Stopped at: Completed 06-02-PLAN.md -- Phase 6 complete
+Resume file: .planning/phases/06-public-api-wiring-cleanup/06-02-SUMMARY.md
