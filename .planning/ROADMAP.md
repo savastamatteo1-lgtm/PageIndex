@@ -133,10 +133,11 @@ Plans:
   5. `PageIndexSettings.ingestion.max_embedding_batch` controls `_EMBED_BATCH_SIZE` in stages.py
   6. `additional_fields` parameter in `PageIndex.ingest()` is either wired through to `process_single_document()` or removed from the signature
   7. `page_index_md.py` is removed or documented as an internal legacy module
-**Plans:** 0/0
+**Plans:** 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Config threading (retrieval settings, ingestion settings, tree-indexing model), API surface completion (search_description, flat kwargs), legacy cleanup
+- [ ] 06-01-PLAN.md -- Config threading (flat kwargs, retrieval settings, tree-indexing model) and API surface completion (search_description method)
+- [ ] 06-02-PLAN.md -- Ingestion wiring (max_embedding_batch, additional_fields) and legacy page_index_md.py deprecation
 
 ## Progress
 
