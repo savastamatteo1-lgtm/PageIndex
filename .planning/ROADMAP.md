@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Schema and LLM Abstraction** - Supabase database schema, Italian legal metadata definitions, and provider-agnostic LLM layer
 - [x] **Phase 2: Ingestion Pipeline** - Batch processing of PDFs into indexed, enriched, and embedded documents stored in Supabase
 - [x] **Phase 3: Retrieval Engines** - Metadata search, semantic search, tree search, and description search working independently
+- [ ] **Phase 3.1: Ingestion Integration Fixes** - Fix config key collision crashing ingest() and populate description embeddings during pipeline (INSERTED — gap closure)
 - [ ] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection
 - [ ] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration
 
@@ -70,6 +71,20 @@ Plans:
 - [x] 03-03-PLAN.md -- Semantic search (DocScore aggregation) and description search (embedding similarity) engines with backfill utility
 - [x] 03-04-PLAN.md -- Tree search engine (async concurrent multi-document wrapper) and retrieval package re-exports
 
+### Phase 3.1: Ingestion Integration Fixes (INSERTED)
+**Goal**: Both E2E flows (Ingest PDFs, Search Description) work without runtime errors — config keys separated and description embeddings populated during ingestion
+**Depends on**: Phase 3
+**Requirements**: FOUND-04, ENRICH-02 (full), ENRICH-03
+**Gap Closure**: Closes gaps from v1.0 milestone audit (ISSUE-01, ISSUE-02)
+**Success Criteria** (what must be TRUE):
+  1. `ingest()` processes documents without `ConfigLoader._validate_keys()` raising ValueError on ingestion-specific keys
+  2. After ingestion, every document has a non-NULL `description_embedding` in the database, and `search_description()` returns results for matching queries
+  3. Ingestion-specific config keys (`metadata_pages`, `chunk_max_tokens`, `chunk_overlap`) are separated from tree-indexer config before `stage_tree_index` is called
+**Plans**: TBD
+
+Plans:
+- [ ] 03.1-01-PLAN.md -- TBD
+
 ### Phase 4: Strategy Orchestration
 **Goal**: Users can select how retrieval works per query, and the system intelligently combines or routes between retrieval engines
 **Depends on**: Phase 3
@@ -99,12 +114,13 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
+Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Schema and LLM Abstraction | 2/2 | Complete    | 2026-02-22 |
 | 2. Ingestion Pipeline | 3/3 | Complete    | 2026-02-22 |
 | 3. Retrieval Engines | 4/4 | Complete    | 2026-02-23 |
+| 3.1. Ingestion Integration Fixes | 0/0 | Not started | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
 | 5. Public API | 0/0 | Not started | - |
