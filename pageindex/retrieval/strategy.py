@@ -235,7 +235,7 @@ def reciprocal_rank_fusion(
 
 
 def _run_metadata_first(
-    query: str, limit: int, model: str | None
+    query: str, limit: int, model: str | None, *, cfg: dict | None = None
 ) -> tuple[list, list[str]]:
     """Run metadata search, supplementing with semantic if results are few.
 
@@ -250,7 +250,8 @@ def _run_metadata_first(
         ``(results, engine_gaps)`` -- gaps is always empty for single-engine
         modes.
     """
-    cfg = load_retrieval_config()
+    if cfg is None:
+        cfg = load_retrieval_config()
     fallback_threshold = cfg.get("metadata_fallback_threshold", 3)
 
     meta_results = search_metadata(query, limit=limit, model=model)
@@ -291,7 +292,7 @@ def _run_semantic_first(
 
 
 def _run_hybrid(
-    query: str, limit: int, model: str | None
+    query: str, limit: int, model: str | None, *, cfg: dict | None = None
 ) -> tuple[list[FusedResult], list[str]]:
     """Run all three engines and fuse results via RRF.
 
@@ -309,7 +310,8 @@ def _run_hybrid(
         ``(fused_results, engine_gaps)`` where engine_gaps lists engine names
         that returned zero results.
     """
-    cfg = load_retrieval_config()
+    if cfg is None:
+        cfg = load_retrieval_config()
     fetch_size = limit * cfg.get("internal_fetch_multiplier", 2)
 
     # Compute query embedding ONCE (Pitfall 3)
@@ -362,6 +364,7 @@ def search(
     strategy: str = "auto",
     limit: int | None = None,
     model: str | None = None,
+    retrieval_overrides: dict | None = None,
 ) -> SearchResponse:
     """Unified retrieval entry point with strategy dispatch.
 
@@ -400,6 +403,8 @@ def search(
         )
 
     cfg = load_retrieval_config()
+    if retrieval_overrides:
+        cfg.update(retrieval_overrides)
     effective_limit = (
         limit if limit is not None else cfg.get("default_top_k", 10)
     )
@@ -421,12 +426,14 @@ def search(
     # Dispatch to the appropriate runner
     if effective_strategy == "metadata":
         results, engine_gaps = _run_metadata_first(
-            query, effective_limit, model
+            query, effective_limit, model, cfg=cfg
         )
     elif effective_strategy == "semantic":
         results, engine_gaps = _run_semantic_first(query, effective_limit)
     elif effective_strategy == "hybrid":
-        results, engine_gaps = _run_hybrid(query, effective_limit, model)
+        results, engine_gaps = _run_hybrid(
+            query, effective_limit, model, cfg=cfg
+        )
     else:
         # Should not reach here given validation above, but defensive
         raise ValueError(f"Unknown resolved strategy: {effective_strategy!r}")

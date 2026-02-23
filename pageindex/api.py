@@ -134,14 +134,21 @@ class PageIndexSettings(BaseSettings):
     @model_validator(mode="before")
     @classmethod
     def _populate_supabase_from_env(cls, values: dict) -> dict:
-        """Accept flat ``SUPABASE_URL`` / ``SUPABASE_KEY`` env vars.
+        """Accept flat kwargs and ``SUPABASE_URL`` / ``SUPABASE_KEY`` env vars.
 
-        When the user has not provided supabase settings via init kwargs
-        or ``PAGEINDEX_SUPABASE__*`` env vars, fall back to the standard
-        ``SUPABASE_URL`` and ``SUPABASE_KEY`` environment variables that
-        many Supabase tools expect.
+        Precedence (highest wins):
+            1. ``supabase`` dict already provided -> use as-is
+            2. Flat kwargs ``supabase_url`` / ``supabase_key`` -> restructure
+            3. Env vars ``SUPABASE_URL`` / ``SUPABASE_KEY`` -> fallback
+
+        The flat kwargs are popped from *values* so pydantic does not
+        reject them as unexpected fields.
         """
-        # Only fill in if supabase is not already fully provided
+        # Pop flat kwargs (remove so pydantic's extra="ignore" doesn't
+        # need to handle them and so they don't clash with field names)
+        flat_url = values.pop("supabase_url", None)
+        flat_key = values.pop("supabase_key", None)
+
         supabase = values.get("supabase")
 
         # Read flat env vars (ignore empty strings)
@@ -149,19 +156,21 @@ class PageIndexSettings(BaseSettings):
         env_key = os.environ.get("SUPABASE_KEY", "").strip() or None
 
         if isinstance(supabase, dict):
-            # Partially provided -- fill missing keys from env
-            if "url" not in supabase and env_url:
-                supabase["url"] = env_url
-            if "key" not in supabase and env_key:
-                supabase["key"] = env_key
+            # Partially provided dict -- fill missing keys from flat kwargs then env
+            if "url" not in supabase:
+                supabase["url"] = flat_url or env_url
+            if "key" not in supabase:
+                supabase["key"] = flat_key or env_key
         elif supabase is None:
-            # Not provided at all -- try flat env vars
-            if env_url or env_key:
-                sb: dict[str, str] = {}
-                if env_url:
-                    sb["url"] = env_url
-                if env_key:
-                    sb["key"] = env_key
+            # Not provided as dict -- try flat kwargs, then env vars
+            sb: dict[str, str] = {}
+            url = flat_url or env_url
+            key = flat_key or env_key
+            if url:
+                sb["url"] = url
+            if key:
+                sb["key"] = key
+            if sb:
                 values["supabase"] = sb
 
         return values
@@ -396,7 +405,10 @@ class PageIndex:
         try:
             t0 = time.perf_counter()
             internal = strategy_search(
-                query, strategy=strategy, limit=effective_limit
+                query,
+                strategy=strategy,
+                limit=effective_limit,
+                retrieval_overrides=self._settings.retrieval.model_dump(),
             )
             elapsed = round(time.perf_counter() - t0, 3)
         except Exception as exc:
@@ -584,12 +596,14 @@ class PageIndex:
         """Convert ingestion settings to the dict format expected by the pipeline.
 
         The tree-indexing stage expects a dict with ``config.yaml`` top-level
-        keys.  We pass an empty dict here because the tree indexer uses its
-        own ``ConfigLoader`` defaults; the ``PageIndex`` settings control the
-        non-tree parameters (metadata_pages, chunk sizes) which are passed
-        separately to ``process_single_document``.
+        keys.  We include ``model`` so the user-specified LLM model is used
+        for tree indexing instead of the ``config.yaml`` default.
+
+        Only valid top-level ``config.yaml`` keys are safe here -- adding
+        nested keys like ``llm`` or ``retrieval`` would trigger
+        ``ConfigLoader._validate_keys()`` ValueError (Pitfall 1).
         """
-        return {}
+        return {"model": self._settings.llm.completion_model}
 
     # ------------------------------------------------------------------
     # Retrieval
