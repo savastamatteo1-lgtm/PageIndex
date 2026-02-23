@@ -4,10 +4,11 @@ Legacy functions (``Gemini_API``, ``ChatGPT_API``, ``Gemini_API_async``, etc.)
 are preserved for backward compatibility with ``page_index.py`` and
 ``page_index_md.py``.
 
-**New code should use** :func:`llm_complete` and :func:`llm_embed` instead of
-the legacy ``Gemini_API`` / ``ChatGPT_API`` functions.  These delegate to the
-provider-agnostic :class:`~pageindex.llm.provider.LLMProvider` abstraction
-layer backed by LiteLLM.
+**New code should use the PageIndex class API** for search, ingestion, and
+retrieval operations::
+
+    from pageindex import PageIndex
+    pi = PageIndex(supabase_url='...', supabase_key='...')
 """
 
 from google import genai
@@ -144,53 +145,6 @@ async def Gemini_API_async(model, prompt, api_key=None):
                 return "Error"
 
 ChatGPT_API_async = Gemini_API_async
-
-
-# ---------------------------------------------------------------------------
-# New provider-agnostic convenience functions (recommended for new code)
-# ---------------------------------------------------------------------------
-
-def llm_complete(messages, **kwargs):
-    """Provider-agnostic LLM completion via the LiteLLM abstraction layer.
-
-    This is the **recommended entry point** for new code.  It delegates to
-    :meth:`pageindex.llm.provider.LLMProvider.complete`.
-
-    Parameters
-    ----------
-    messages : list[dict]
-        OpenAI-style message list, e.g.
-        ``[{"role": "user", "content": "Hello"}]``.
-    **kwargs
-        Forwarded to ``LLMProvider.complete`` (e.g. ``temperature``).
-
-    Returns
-    -------
-    str
-        The assistant response content.
-    """
-    from pageindex.llm.provider import get_provider
-    return get_provider().complete(messages, **kwargs)
-
-
-def llm_embed(texts):
-    """Provider-agnostic embedding generation via the LiteLLM abstraction layer.
-
-    This is the **recommended entry point** for new embedding code.  It
-    delegates to :meth:`pageindex.llm.provider.LLMProvider.embed`.
-
-    Parameters
-    ----------
-    texts : list[str]
-        Texts to embed.
-
-    Returns
-    -------
-    list[list[float]]
-        One float vector per input text.
-    """
-    from pageindex.llm.provider import get_provider
-    return get_provider().embed(texts)
 
 
 def get_json_content(response):
