@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Retrieval Engines** - Metadata search, semantic search, tree search, and description search working independently
 - [x] **Phase 3.1: Ingestion Integration Fixes** - Fix config key collision crashing ingest() and populate description embeddings during pipeline (INSERTED — gap closure) (completed 2026-02-23)
 - [x] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection (completed 2026-02-23)
-- [ ] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration
+- [x] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration (completed 2026-02-23)
 
 ## Phase Details
 
@@ -112,7 +112,7 @@ Plans:
   2. The API accepts configuration (Supabase URL, LLM provider, embedding model) via config file or constructor arguments without requiring code changes
   3. A new user can install the package, configure credentials, ingest a document, and run a search query with fewer than 10 lines of Python
   4. `pageindex/__init__.py` re-exports all public API functions (ingest, search, retrieve) and subsystem entry points
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 05-01-PLAN.md -- pydantic-settings model (PageIndexSettings), exception hierarchy, public return types (SearchResponse, IngestionResult, DocumentInfo)
@@ -131,4 +131,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5
 | 3. Retrieval Engines | 4/4 | Complete    | 2026-02-23 |
 | 3.1. Ingestion Integration Fixes | 0/0 | Complete    | 2026-02-23 |
 | 4. Strategy Orchestration | 0/0 | Complete    | 2026-02-23 |
-| 5. Public API | 0/0 | Not started | - |
+| 5. Public API | 0/0 | Complete    | 2026-02-23 |
