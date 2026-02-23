@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Ingestion Pipeline** - Batch processing of PDFs into indexed, enriched, and embedded documents stored in Supabase
 - [x] **Phase 3: Retrieval Engines** - Metadata search, semantic search, tree search, and description search working independently
 - [x] **Phase 3.1: Ingestion Integration Fixes** - Fix config key collision crashing ingest() and populate description embeddings during pipeline (INSERTED — gap closure) (completed 2026-02-23)
-- [ ] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection
+- [x] **Phase 4: Strategy Orchestration** - User-selectable retrieval strategy with hybrid scoring and automatic strategy selection (completed 2026-02-23)
 - [ ] **Phase 5: Public API** - Clean Python library interface wrapping all capabilities for programmatic integration
 
 ## Phase Details
@@ -96,7 +96,7 @@ Plans:
   2. When `hybrid` is selected, metadata and semantic results are combined using Reciprocal Rank Fusion and the merged ranking outperforms either strategy alone on mixed queries
   3. When `auto` is selected, the system detects structured indicators (dates, court names, ECLI) to route to metadata-first, and routes topical/conceptual queries to semantic-first
   4. `retrieval:` section exists in config.yaml with tunable thresholds (score minimums, top-k limits) consumed by `load_retrieval_config()`
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 04-01-PLAN.md -- Config extension (retrieval: YAML section, RRF/strategy defaults), fusion result types (FusedResult, SearchResponse, QueryClassification), and updated_at tech debt fix
@@ -128,5 +128,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 3.1 -> 4 -> 5
 | 2. Ingestion Pipeline | 3/3 | Complete    | 2026-02-22 |
 | 3. Retrieval Engines | 4/4 | Complete    | 2026-02-23 |
 | 3.1. Ingestion Integration Fixes | 0/0 | Complete    | 2026-02-23 |
-| 4. Strategy Orchestration | 0/0 | Not started | - |
+| 4. Strategy Orchestration | 0/0 | Complete    | 2026-02-23 |
 | 5. Public API | 0/0 | Not started | - |
