@@ -17,7 +17,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Metadata Retrieval
 
-- [ ] **META-01**: User can search documents by natural language queries that get translated to SQL against the Italian legal metadata schema via LLM
+- [x] **META-01**: User can search documents by natural language queries that get translated to SQL against the Italian legal metadata schema via LLM
 - [x] **META-02**: System validates and sanitizes LLM-generated SQL queries before execution (read-only role, AST validation)
 - [x] **META-03**: System injects the metadata schema into the LLM prompt so it generates correct column names and value types
 
@@ -83,7 +83,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 2 | Complete |
 | FOUND-05 | Phase 5 | Pending |
-| META-01 | Phase 3 | Pending |
+| META-01 | Phase 3 | Complete |
 | META-02 | Phase 3 | Complete |
 | META-03 | Phase 3 | Complete |
 | SEM-01 | Phase 2 | Complete |
