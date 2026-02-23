@@ -62,12 +62,13 @@ Plans:
   3. User can search by semantic similarity and get back documents ranked by DocScore, which aggregates chunk-level relevance into document-level scores
   4. User can run LLM tree search on a selected document and get back specific section titles and page ranges identifying the most relevant content
   5. User can search documents by comparing a query against LLM-generated descriptions for lightweight discovery
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md -- Shared retrieval types (uniform result contract, MetadataFilter), config, migration 003 (pg_trgm, description_embedding, match_descriptions RPC)
+- [ ] 03-02-PLAN.md -- Metadata retrieval engine (LLM structured JSON filters, Supabase PostgREST query chains, filter-field scoring)
+- [ ] 03-03-PLAN.md -- Semantic search (DocScore aggregation) and description search (embedding similarity) engines with backfill utility
+- [ ] 03-04-PLAN.md -- Tree search engine (async concurrent multi-document wrapper) and retrieval package re-exports
 
 ### Phase 4: Strategy Orchestration
 **Goal**: Users can select how retrieval works per query, and the system intelligently combines or routes between retrieval engines
@@ -104,6 +105,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Schema and LLM Abstraction | 2/2 | Complete    | 2026-02-22 |
 | 2. Ingestion Pipeline | 3/3 | Complete    | 2026-02-22 |
-| 3. Retrieval Engines | 0/0 | Not started | - |
+| 3. Retrieval Engines | 0/4 | Planned | - |
 | 4. Strategy Orchestration | 0/0 | Not started | - |
 | 5. Public API | 0/0 | Not started | - |
