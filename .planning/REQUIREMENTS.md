@@ -34,9 +34,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Strategy Selection
 
-- [ ] **STRAT-01**: User can select retrieval strategy per query: `metadata`, `semantic`, `hybrid`, or `auto`
-- [ ] **STRAT-02**: System combines metadata and semantic results via Reciprocal Rank Fusion (RRF) when hybrid strategy is selected
-- [ ] **STRAT-03**: Auto mode applies heuristics to select strategy: structured indicators (dates, court names, ECLI) → metadata-first; topical/conceptual queries → semantic-first
+- [x] **STRAT-01**: User can select retrieval strategy per query: `metadata`, `semantic`, `hybrid`, or `auto`
+- [x] **STRAT-02**: System combines metadata and semantic results via Reciprocal Rank Fusion (RRF) when hybrid strategy is selected
+- [x] **STRAT-03**: Auto mode applies heuristics to select strategy: structured indicators (dates, court names, ECLI) → metadata-first; topical/conceptual queries → semantic-first
 
 ### Ingestion Enrichment
 
@@ -91,9 +91,9 @@ Deferred to future release. Tracked but not in current roadmap.
 | SEM-03 | Phase 3 | Complete |
 | TREE-01 | Phase 3 | Complete |
 | TREE-02 | Phase 3 | Complete |
-| STRAT-01 | Phase 4 | Pending |
-| STRAT-02 | Phase 4 | Pending |
-| STRAT-03 | Phase 4 | Pending |
+| STRAT-01 | Phase 4 | Complete |
+| STRAT-02 | Phase 4 | Complete |
+| STRAT-03 | Phase 4 | Complete |
 | ENRICH-01 | Phase 2 | Complete |
 | ENRICH-02 | Phase 3.1 | Complete |
 | ENRICH-03 | Phase 3.1 | Complete |
