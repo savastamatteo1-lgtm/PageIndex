@@ -29,8 +29,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Tree Search
 
-- [ ] **TREE-01**: System performs LLM-powered tree search within selected documents to identify the most relevant sections/nodes
-- [ ] **TREE-02**: System returns specific page ranges and section titles from tree search results with source traceability
+- [x] **TREE-01**: System performs LLM-powered tree search within selected documents to identify the most relevant sections/nodes
+- [x] **TREE-02**: System returns specific page ranges and section titles from tree search results with source traceability
 
 ### Strategy Selection
 
@@ -89,8 +89,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | SEM-01 | Phase 2 | Complete |
 | SEM-02 | Phase 3 | Complete |
 | SEM-03 | Phase 3 | Complete |
-| TREE-01 | Phase 3 | Pending |
-| TREE-02 | Phase 3 | Pending |
+| TREE-01 | Phase 3 | Complete |
+| TREE-02 | Phase 3 | Complete |
 | STRAT-01 | Phase 4 | Pending |
 | STRAT-02 | Phase 4 | Pending |
 | STRAT-03 | Phase 4 | Pending |
