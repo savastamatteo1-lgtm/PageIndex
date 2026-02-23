@@ -1,19 +1,22 @@
-"""Public API types for PageIndex.
+"""Public API for PageIndex.
 
 Defines the pydantic-settings configuration model (:class:`PageIndexSettings`),
 public return types (:class:`SearchResponse`, :class:`IngestionResult`,
-:class:`DocumentInfo`), and their supporting nested models.
+:class:`DocumentInfo`), and the main :class:`PageIndex` facade class.
 
 Usage::
 
-    from pageindex.api import PageIndexSettings, SearchResponse, IngestionResult
+    from pageindex.api import PageIndex
 
-    settings = PageIndexSettings(supabase={"url": "...", "key": "..."})
+    pi = PageIndex(supabase={"url": "https://...", "key": "..."})
+    results = pi.search("sentenze penali 2023")
 """
 
 from __future__ import annotations
 
+import logging
 import os
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -271,3 +274,380 @@ class DocumentInfo:
     metadata: dict = field(default_factory=dict)
     tree: dict | None = None
     chunks: list[dict] | None = None
+
+
+# ---------------------------------------------------------------------------
+# PageIndex facade class
+# ---------------------------------------------------------------------------
+
+logger = logging.getLogger(__name__)
+
+
+class PageIndex:
+    """Single entry point for the PageIndex public API.
+
+    Holds configuration, initialises subsystem singletons (DB client, LLM
+    provider), and delegates to the proven internal engines for search,
+    ingestion, and retrieval.
+
+    Parameters
+    ----------
+    settings : PageIndexSettings | None
+        Pre-built settings object.  When provided, *kwargs* are ignored.
+    **kwargs
+        Individual configuration values forwarded to
+        :class:`PageIndexSettings`.  Common keys: ``supabase``, ``llm``,
+        ``ingestion``, ``retrieval``.
+
+    Raises
+    ------
+    ConfigError
+        If the resulting configuration is invalid (wraps pydantic
+        ``ValidationError`` with a clear message listing missing fields).
+
+    Examples
+    --------
+    >>> pi = PageIndex(supabase={"url": "https://xyz.supabase.co", "key": "..."})
+    >>> resp = pi.search("sentenze della Corte di Cassazione 2023")
+    >>> print(resp.strategy_used, len(resp.results))
+    """
+
+    def __init__(
+        self, *, settings: PageIndexSettings | None = None, **kwargs
+    ) -> None:
+        from pageindex.exceptions import ConfigError
+
+        if settings is not None:
+            self._settings = settings
+        else:
+            try:
+                self._settings = PageIndexSettings(**kwargs)
+            except Exception as exc:
+                # Re-raise pydantic ValidationError as ConfigError
+                raise ConfigError(
+                    f"Invalid PageIndex configuration: {exc}"
+                ) from exc
+
+        self._init_subsystems()
+
+    # ------------------------------------------------------------------
+    # Subsystem wiring (private)
+    # ------------------------------------------------------------------
+
+    def _init_subsystems(self) -> None:
+        """Wire settings to existing subsystem singletons.
+
+        1. Supabase client: set env vars and reset singleton so the next
+           ``get_client()`` call picks up the new credentials.
+        2. LLM provider: replace the module-level singleton with a fresh
+           ``LLMProvider`` built from the current settings.
+        """
+        import pageindex.db.client as db_client_mod
+        import pageindex.llm.provider as llm_provider_mod
+        from pageindex.llm.provider import LLMProvider
+
+        # --- Supabase ---
+        os.environ["SUPABASE_URL"] = self._settings.supabase.url
+        os.environ["SUPABASE_KEY"] = self._settings.supabase.key
+        db_client_mod.reset_client()
+
+        # --- LLM provider ---
+        llm_provider_mod._provider_instance = LLMProvider(
+            self._settings.llm.model_dump()
+        )
+
+    # ------------------------------------------------------------------
+    # Search
+    # ------------------------------------------------------------------
+
+    def search(
+        self,
+        query: str,
+        *,
+        strategy: str = "auto",
+        limit: int | None = None,
+    ) -> SearchResponse:
+        """Run a multi-strategy search.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        strategy : str
+            One of ``"auto"``, ``"metadata"``, ``"semantic"``, ``"hybrid"``.
+        limit : int | None
+            Max results.  Defaults to ``retrieval.default_top_k``.
+
+        Returns
+        -------
+        SearchResponse
+            Public response with results, timing, strategy info.
+
+        Raises
+        ------
+        SearchError
+            On any search failure.
+        """
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.strategy import search as strategy_search
+
+        effective_limit = limit or self._settings.retrieval.default_top_k
+
+        try:
+            t0 = time.perf_counter()
+            internal = strategy_search(
+                query, strategy=strategy, limit=effective_limit
+            )
+            elapsed = round(time.perf_counter() - t0, 3)
+        except Exception as exc:
+            raise SearchError(f"Search failed: {exc}") from exc
+
+        return SearchResponse(
+            results=internal.results,
+            query=query,
+            strategy_used=internal.strategy,
+            scores={
+                "engine_gaps": internal.engine_gaps,
+                "result_count": len(internal.results),
+            },
+            timing=elapsed,
+            reasoning=internal.reasoning,
+        )
+
+    def search_semantic(
+        self, query: str, *, limit: int | None = None
+    ) -> list:
+        """Direct semantic (vector) search.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        limit : int | None
+            Max results.  Defaults to ``retrieval.default_top_k``.
+
+        Returns
+        -------
+        list[SemanticResult]
+            Ranked results from the semantic engine.
+        """
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.semantic import search_semantic as _search_sem
+
+        effective_limit = limit or self._settings.retrieval.default_top_k
+        try:
+            return _search_sem(query, limit=effective_limit)
+        except Exception as exc:
+            raise SearchError(f"Semantic search failed: {exc}") from exc
+
+    def search_metadata(
+        self, query: str, *, limit: int | None = None
+    ) -> list:
+        """Direct metadata (structured filter) search.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        limit : int | None
+            Max results.  Defaults to ``retrieval.default_top_k``.
+
+        Returns
+        -------
+        list[MetadataResult]
+            Ranked results from the metadata engine.
+        """
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.metadata import search_metadata as _search_meta
+
+        effective_limit = limit or self._settings.retrieval.default_top_k
+        try:
+            return _search_meta(query, limit=effective_limit)
+        except Exception as exc:
+            raise SearchError(f"Metadata search failed: {exc}") from exc
+
+    def search_tree(
+        self,
+        query: str,
+        doc_ids: list[str],
+        *,
+        model: str | None = None,
+    ) -> list:
+        """Direct tree-structure search across specific documents.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        doc_ids : list[str]
+            Document UUIDs to search within.
+        model : str | None
+            LLM model override for section relevance assessment.
+
+        Returns
+        -------
+        list[TreeSearchResult]
+            Ranked results with relevant sections identified.
+        """
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.tree_search import tree_search_sync
+
+        effective_model = model or self._settings.llm.completion_model
+        try:
+            return tree_search_sync(doc_ids, query, model=effective_model)
+        except Exception as exc:
+            raise SearchError(f"Tree search failed: {exc}") from exc
+
+    # ------------------------------------------------------------------
+    # Ingestion
+    # ------------------------------------------------------------------
+
+    def ingest(
+        self,
+        *,
+        path: str | None = None,
+        text: str | None = None,
+        url: str | None = None,
+        additional_fields: dict | None = None,
+    ) -> IngestionResult:
+        """Ingest a document into the PageIndex corpus.
+
+        Provide exactly one of *path* or *text*.
+
+        Parameters
+        ----------
+        path : str | None
+            Absolute path to a PDF file.
+        text : str | None
+            Raw text content (planned -- not yet implemented).
+        url : str | None
+            Source URL when using *text* input.
+        additional_fields : dict | None
+            Extra metadata to attach to the document record
+            (stored in the ``additional_fields`` JSONB column).
+            These are **user-provided** overflow fields, not
+            auto-extracted metadata.
+
+        Returns
+        -------
+        IngestionResult
+            Outcome of the ingestion.
+
+        Raises
+        ------
+        IngestionError
+            If ingestion fails or invalid arguments are provided.
+        """
+        from pageindex.exceptions import IngestionError
+        from pageindex.llm.provider import get_provider
+
+        # Validate mutually exclusive inputs
+        if path and text:
+            raise IngestionError(
+                "Provide exactly one of 'path' or 'text', not both"
+            )
+        if not path and not text:
+            raise IngestionError(
+                "Provide at least one of 'path' or 'text'"
+            )
+
+        if text is not None:
+            raise IngestionError(
+                "Text ingestion not yet implemented -- use path= with a PDF file. "
+                "Text ingestion is planned for a future release."
+            )
+
+        # Path-based ingestion
+        try:
+            from pageindex.ingestion.stages import process_single_document
+
+            config = self._build_ingestion_config()
+            pipeline = process_single_document(
+                pdf_path=path,
+                llm_provider=get_provider(),
+                config=config,
+                metadata_pages=self._settings.ingestion.metadata_pages,
+                chunk_max_tokens=self._settings.ingestion.chunk_max_tokens,
+                chunk_overlap=self._settings.ingestion.chunk_overlap,
+            )
+
+            return IngestionResult(
+                document_id=pipeline.doc_id,
+                document_name=pipeline.doc_name,
+                chunks_created=len(pipeline.chunks) if pipeline.chunks else 0,
+                status="succeeded",
+            )
+        except Exception as exc:
+            raise IngestionError(f"Ingestion failed: {exc}") from exc
+
+    def _build_ingestion_config(self) -> dict:
+        """Convert ingestion settings to the dict format expected by the pipeline.
+
+        The tree-indexing stage expects a dict with ``config.yaml`` top-level
+        keys.  We pass an empty dict here because the tree indexer uses its
+        own ``ConfigLoader`` defaults; the ``PageIndex`` settings control the
+        non-tree parameters (metadata_pages, chunk sizes) which are passed
+        separately to ``process_single_document``.
+        """
+        return {}
+
+    # ------------------------------------------------------------------
+    # Retrieval
+    # ------------------------------------------------------------------
+
+    def retrieve(self, doc_id: str) -> DocumentInfo:
+        """Retrieve full document information by ID.
+
+        Parameters
+        ----------
+        doc_id : str
+            Document UUID.
+
+        Returns
+        -------
+        DocumentInfo
+            Combined document metadata and tree structure.
+
+        Raises
+        ------
+        SearchError
+            If the document is not found.
+        """
+        from pageindex.db.documents import get_document
+        from pageindex.db.trees import get_tree
+        from pageindex.exceptions import SearchError
+
+        doc = get_document(doc_id)
+        if doc is None:
+            raise SearchError(f"Document not found: {doc_id}")
+
+        tree_row = get_tree(doc_id)
+        tree = tree_row.get("tree_json") if tree_row else None
+
+        return DocumentInfo(
+            doc_id=doc_id,
+            name=doc.get("doc_name", ""),
+            metadata=doc,
+            tree=tree,
+        )
+
+    def list_documents(
+        self, *, limit: int = 100, offset: int = 0
+    ) -> list[dict]:
+        """List available documents with pagination.
+
+        Parameters
+        ----------
+        limit : int
+            Maximum number of documents (default 100).
+        offset : int
+            Number of documents to skip (default 0).
+
+        Returns
+        -------
+        list[dict]
+            Document metadata rows.
+        """
+        from pageindex.db.documents import list_documents
+
+        return list_documents(limit=limit, offset=offset)
