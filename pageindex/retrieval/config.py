@@ -50,6 +50,7 @@ CONFIDENCE_THRESHOLDS: dict[str, dict[str, float]] = {
     "semantic": {"high": 0.6, "medium": 0.35},
     "description": {"high": 0.8, "medium": 0.6},
     "tree_search": {"high": 0.7, "medium": 0.4},
+    "deep_search": {"high": 0.5, "medium": 0.3},
     "hybrid": {"high": 0.03, "medium": 0.015},
 }
 """Per-engine score boundaries for confidence labels.
@@ -66,6 +67,17 @@ TREE_SEARCH_MAX_CONCURRENCY: int = 5
 
 METADATA_MAX_RETRIES: int = 3
 """Total attempts for LLM filter generation (initial + up to 2 retries)."""
+
+DOC_SCORE_METHOD: str = "canonical"
+"""Default DocScore aggregation method.
+
+``"canonical"`` uses the original ``(1/sqrt(N+1)) * sum(scores)`` formula.
+``"topk_mean"`` averages only the top-k chunk scores per document, rewarding
+concentrated quality over broad but weak matches.
+"""
+
+DOC_SCORE_TOPK_K: int = 3
+"""Number of top chunk scores to average when using ``"topk_mean"`` aggregation."""
 
 # ---------------------------------------------------------------------------
 # Config loader
@@ -88,6 +100,8 @@ _RETRIEVAL_DEFAULTS: dict = {
     "tree_search_top_n": TREE_SEARCH_TOP_N,
     "tree_search_max_concurrency": TREE_SEARCH_MAX_CONCURRENCY,
     "metadata_max_retries": METADATA_MAX_RETRIES,
+    "doc_score_method": DOC_SCORE_METHOD,
+    "doc_score_topk_k": DOC_SCORE_TOPK_K,
 }
 
 

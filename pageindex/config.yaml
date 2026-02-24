@@ -1,5 +1,7 @@
+# Legacy key kept for ConfigLoader backward compatibility (actual model comes from llm.tree_indexing_model)
+model: null
+
 # Existing PageIndex settings (unchanged)
-model: "gemini-3.1-pro-preview"
 toc_check_page_num: 20
 max_page_num_each_node: 10
 max_token_num_each_node: 20000
@@ -11,9 +13,11 @@ if_add_node_text: "no"
 # LLM abstraction settings
 llm:
   completion_model: "gemini/gemini-2.0-flash"
+  tree_indexing_model: "gemini/gemini-2.0-flash"
   embedding_model: "gemini/gemini-embedding-001"
   embedding_dimensions: 768
   temperature: 0
+  num_retries: 10
 
 # Supabase settings (env vars override)
 supabase:
@@ -58,3 +62,5 @@ retrieval:
   tree_search_top_n: 5
   tree_search_max_concurrency: 5
   metadata_max_retries: 3
+  doc_score_method: "canonical"   # "canonical" or "topk_mean"
+  doc_score_topk_k: 3            # Number of top chunks to average in topk_mean mode

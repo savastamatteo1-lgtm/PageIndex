@@ -26,7 +26,9 @@ from pageindex.db.documents import get_document
 from pageindex.llm.provider import get_provider
 from pageindex.retrieval.config import (
     DEFAULT_TOP_K,
+    DOC_SCORE_TOPK_K,
     DOCSCORE_MIN_THRESHOLD,
+    load_retrieval_config,
 )
 from pageindex.retrieval.models import SemanticResult, assign_confidence
 
@@ -108,6 +110,48 @@ def compute_doc_scores(chunk_results: list[dict]) -> list[dict]:
     return sorted(doc_scores, key=lambda x: x["score"], reverse=True)
 
 
+def compute_doc_scores_topk(
+    chunk_results: list[dict], k: int = DOC_SCORE_TOPK_K
+) -> list[dict]:
+    """Aggregate chunk similarities using top-k mean per document.
+
+    Instead of the canonical sum-with-penalty formula, this averages only
+    the *k* highest chunk scores for each document.  This rewards documents
+    with a few highly-relevant chunks over documents with many weak matches.
+
+    Parameters
+    ----------
+    chunk_results : list[dict]
+        Raw results from ``match_chunks`` RPC.  Each dict must have keys
+        ``doc_id`` (str) and ``similarity`` (float).
+    k : int
+        Number of top chunk scores to average.  Defaults to
+        :data:`~pageindex.retrieval.config.DOC_SCORE_TOPK_K`.
+
+    Returns
+    -------
+    list[dict]
+        Sorted (descending) list of dicts with keys: ``doc_id`` (str),
+        ``score`` (float), ``chunk_count`` (int).
+    """
+    doc_chunks: dict[str, list[float]] = defaultdict(list)
+    for chunk in chunk_results:
+        doc_chunks[chunk["doc_id"]].append(chunk["similarity"])
+
+    doc_scores: list[dict] = []
+    for doc_id, similarities in doc_chunks.items():
+        # Sort descending and take top-k
+        top_k = sorted(similarities, reverse=True)[:k]
+        doc_score = sum(top_k) / len(top_k)
+        doc_scores.append({
+            "doc_id": doc_id,
+            "score": doc_score,
+            "chunk_count": len(similarities),
+        })
+
+    return sorted(doc_scores, key=lambda x: x["score"], reverse=True)
+
+
 # ---------------------------------------------------------------------------
 # Semantic search entry point
 # ---------------------------------------------------------------------------
@@ -118,6 +162,7 @@ def search_semantic(
     limit: int | None = None,
     query_embedding: list[float] | None = None,
     match_threshold: float | None = None,
+    doc_score_method: str | None = None,
 ) -> list[SemanticResult]:
     """Search documents by semantic similarity with DocScore aggregation.
 
@@ -135,6 +180,9 @@ def search_semantic(
     match_threshold : float | None
         Minimum chunk-level cosine similarity.  Falls back to the
         ``match_chunks`` RPC default of 0.7.
+    doc_score_method : str | None
+        DocScore aggregation method: ``"canonical"`` (default sum-with-penalty)
+        or ``"topk_mean"`` (average top-k chunks).  Falls back to config.
 
     Returns
     -------
@@ -145,6 +193,11 @@ def search_semantic(
     # Resolve defaults
     effective_limit = limit if limit is not None else DEFAULT_TOP_K
     effective_threshold = match_threshold if match_threshold is not None else 0.7
+
+    # Resolve doc_score_method from config if not provided
+    if doc_score_method is None:
+        cfg = load_retrieval_config()
+        doc_score_method = cfg.get("doc_score_method", "canonical")
 
     # Compute or reuse query embedding
     if query_embedding is None:
@@ -163,7 +216,12 @@ def search_semantic(
         return []
 
     # Aggregate to document-level scores
-    scored_docs = compute_doc_scores(chunks)
+    if doc_score_method == "topk_mean":
+        topk_cfg = load_retrieval_config()
+        k = topk_cfg.get("doc_score_topk_k", DOC_SCORE_TOPK_K)
+        scored_docs = compute_doc_scores_topk(chunks, k=k)
+    else:
+        scored_docs = compute_doc_scores(chunks)
 
     # Filter by minimum DocScore threshold
     scored_docs = [d for d in scored_docs if d["score"] >= DOCSCORE_MIN_THRESHOLD]

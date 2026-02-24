@@ -20,7 +20,14 @@ Subsystem modules remain accessible as submodule imports::
 """
 
 # Public API class and return types
-from .api import PageIndex, SearchResponse, IngestionResult, DocumentInfo
+from .api import (
+    PageIndex,
+    SearchResponse,
+    IngestionResult,
+    DocumentInfo,
+    DeepSearchResult,
+    DeepSearchResponse,
+)
 
 # Exception hierarchy
 from .exceptions import PageIndexError, ConfigError, IngestionError, SearchError
@@ -32,6 +39,8 @@ __all__ = [
     "PageIndex",
     "PageIndexSettings",
     "SearchResponse",
+    "DeepSearchResult",
+    "DeepSearchResponse",
     "IngestionResult",
     "DocumentInfo",
     "PageIndexError",

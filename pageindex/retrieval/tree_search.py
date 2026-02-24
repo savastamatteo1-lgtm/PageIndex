@@ -280,6 +280,7 @@ async def tree_search(
     doc_ids: list[str],
     query: str,
     model: str | None = None,
+    top_n: int | None = None,
 ) -> list[TreeSearchResult]:
     """Concurrent tree search across multiple documents.
 
@@ -289,12 +290,15 @@ async def tree_search(
     Parameters
     ----------
     doc_ids : list[str]
-        Document UUIDs to search (truncated to ``TREE_SEARCH_TOP_N``).
+        Document UUIDs to search (truncated to *top_n*).
     query : str
         The user's search query.
     model : str | None
         LLM model for tree search.  Falls back to retrieval config then
         to the default completion model.
+    top_n : int | None
+        Maximum number of documents to search.  When ``None``, falls back
+        to the ``tree_search_top_n`` config value.
 
     Returns
     -------
@@ -303,7 +307,8 @@ async def tree_search(
     """
     # Load config for defaults
     cfg = load_retrieval_config()
-    top_n = cfg.get("tree_search_top_n", TREE_SEARCH_TOP_N)
+    if top_n is None:
+        top_n = cfg.get("tree_search_top_n", TREE_SEARCH_TOP_N)
     max_concurrency = cfg.get("tree_search_max_concurrency", TREE_SEARCH_MAX_CONCURRENCY)
 
     # Truncate to top N documents
@@ -371,6 +376,7 @@ def tree_search_sync(
     doc_ids: list[str],
     query: str,
     model: str | None = None,
+    top_n: int | None = None,
 ) -> list[TreeSearchResult]:
     """Synchronous wrapper around :func:`tree_search`.
 
@@ -385,6 +391,9 @@ def tree_search_sync(
         The user's search query.
     model : str | None
         LLM model name override.
+    top_n : int | None
+        Maximum number of documents to search.  Forwarded to
+        :func:`tree_search`.
 
     Returns
     -------
@@ -404,7 +413,7 @@ def tree_search_sync(
         def _run() -> None:
             try:
                 result_container.extend(
-                    asyncio.run(tree_search(doc_ids, query, model))
+                    asyncio.run(tree_search(doc_ids, query, model, top_n=top_n))
                 )
             except Exception as exc:
                 exception_container.append(exc)
@@ -417,4 +426,4 @@ def tree_search_sync(
             raise exception_container[0]
         return result_container
 
-    return asyncio.run(tree_search(doc_ids, query, model))
+    return asyncio.run(tree_search(doc_ids, query, model, top_n=top_n))

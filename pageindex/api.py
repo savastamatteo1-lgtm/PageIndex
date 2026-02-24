@@ -41,6 +41,8 @@ class LLMSettings(BaseModel):
     embedding_model: str = "gemini/gemini-embedding-001"
     embedding_dimensions: int = 768
     temperature: float = 0
+    tree_indexing_model: str | None = None
+    num_retries: int = 10
 
 
 class SupabaseSettings(BaseModel):
@@ -255,6 +257,70 @@ class IngestionResult:
     chunks_created: int
     status: str
     error: str | None = None
+
+
+@dataclass
+class DeepSearchResult:
+    """A single document result from the two-stage deep search pipeline.
+
+    Combines the document-level score from Stage 1 (multi-strategy search)
+    with the section-level detail from Stage 2 (tree search), using a
+    geometric mean to produce a combined score.
+
+    Attributes
+    ----------
+    doc_id : str
+        Document UUID.
+    combined_score : float
+        Geometric mean of the normalised Stage 1 score and tree search score.
+    doc_score : float
+        Original (raw) document-level score from Stage 1.
+    tree_score : float
+        Tree search relevance score (fraction of relevant sections).
+    sections : list[dict]
+        Relevant sections identified by tree search, each with
+        ``title``, ``start_page``, ``end_page``, ``node_id``.
+    metadata : dict
+        Full document metadata from the ``documents`` table.
+    confidence : str
+        ``"high"``, ``"medium"``, or ``"low"`` based on combined_score.
+    """
+
+    doc_id: str
+    combined_score: float
+    doc_score: float
+    tree_score: float
+    sections: list[dict] = field(default_factory=list)
+    metadata: dict = field(default_factory=dict)
+    confidence: str = "low"
+
+
+@dataclass
+class DeepSearchResponse:
+    """Response from the two-stage deep search pipeline.
+
+    Attributes
+    ----------
+    results : list[DeepSearchResult]
+        Documents that passed both stages, ranked by combined score.
+    query : str
+        The original query string.
+    stage1_count : int
+        Number of documents returned by Stage 1 (before tree filtering).
+    filtered_count : int
+        Number of documents that had relevant tree sections (= len(results)).
+    timing : float
+        Total elapsed seconds for both stages.
+    strategy_used : str
+        Strategy used in Stage 1.
+    """
+
+    results: list[DeepSearchResult]
+    query: str
+    stage1_count: int = 0
+    filtered_count: int = 0
+    timing: float = 0.0
+    strategy_used: str = ""
 
 
 @dataclass
@@ -486,6 +552,7 @@ class PageIndex:
         doc_ids: list[str],
         *,
         model: str | None = None,
+        top_n: int | None = None,
     ) -> list:
         """Direct tree-structure search across specific documents.
 
@@ -497,6 +564,9 @@ class PageIndex:
             Document UUIDs to search within.
         model : str | None
             LLM model override for section relevance assessment.
+        top_n : int | None
+            Maximum number of documents to search.  When ``None``, falls
+            back to the ``tree_search_top_n`` config value.
 
         Returns
         -------
@@ -508,7 +578,9 @@ class PageIndex:
 
         effective_model = model or self._settings.llm.completion_model
         try:
-            return tree_search_sync(doc_ids, query, model=effective_model)
+            return tree_search_sync(
+                doc_ids, query, model=effective_model, top_n=top_n
+            )
         except Exception as exc:
             raise SearchError(f"Tree search failed: {exc}") from exc
 
@@ -537,6 +609,147 @@ class PageIndex:
             return _search_desc(query, limit=effective_limit)
         except Exception as exc:
             raise SearchError(f"Description search failed: {exc}") from exc
+
+    def search_deep(
+        self,
+        query: str,
+        *,
+        strategy: str | None = None,
+        limit: int | None = None,
+        model: str | None = None,
+    ) -> DeepSearchResponse:
+        """Two-stage deep search: document discovery → section-level filtering.
+
+        **Stage 1** runs :meth:`search` to find the top candidate documents.
+        **Stage 2** runs :meth:`search_tree` on those candidates to identify
+        relevant sections within each document.  Documents where tree search
+        finds no relevant sections are filtered out.
+
+        Scores are combined using a geometric mean of the normalised Stage 1
+        score and the tree search score, ensuring that a document must perform
+        well on *both* stages to rank high.
+
+        Parameters
+        ----------
+        query : str
+            Natural-language search query.
+        strategy : str | None
+            Stage 1 strategy (forwarded to :meth:`search`).
+        limit : int | None
+            Max Stage 1 results (forwarded to :meth:`search`).
+        model : str | None
+            LLM model for Stage 2 tree search.
+
+        Returns
+        -------
+        DeepSearchResponse
+            Combined results with section-level detail.
+
+        Raises
+        ------
+        SearchError
+            On any search failure.
+        """
+        import math
+
+        from pageindex.exceptions import SearchError
+        from pageindex.retrieval.models import FusedResult, RetrievalResult
+
+        t0 = time.perf_counter()
+
+        # ------ Stage 1: document discovery ------
+        try:
+            stage1 = self.search(query, strategy=strategy, limit=limit)
+        except Exception as exc:
+            raise SearchError(f"Deep search Stage 1 failed: {exc}") from exc
+
+        if not stage1.results:
+            elapsed = round(time.perf_counter() - t0, 3)
+            return DeepSearchResponse(
+                results=[],
+                query=query,
+                stage1_count=0,
+                filtered_count=0,
+                timing=elapsed,
+                strategy_used=stage1.strategy_used,
+            )
+
+        # Extract doc_ids and raw scores from Stage 1
+        doc_scores_map: dict[str, float] = {}
+        doc_metadata_map: dict[str, dict] = {}
+        for r in stage1.results:
+            if isinstance(r, FusedResult):
+                doc_scores_map[r.doc_id] = r.fused_score
+                doc_metadata_map[r.doc_id] = r.metadata
+            elif isinstance(r, RetrievalResult):
+                doc_scores_map[r.doc_id] = r.score
+                doc_metadata_map[r.doc_id] = r.metadata
+
+        doc_ids = list(doc_scores_map.keys())
+        stage1_count = len(doc_ids)
+
+        # Normalise Stage 1 scores to 0-1 via min-max
+        raw_scores = list(doc_scores_map.values())
+        s_min = min(raw_scores)
+        s_max = max(raw_scores)
+        score_range = s_max - s_min
+        if score_range > 0:
+            norm_scores = {
+                did: (sc - s_min) / score_range
+                for did, sc in doc_scores_map.items()
+            }
+        else:
+            # All scores identical -- normalise to 1.0
+            norm_scores = {did: 1.0 for did in doc_scores_map}
+
+        # ------ Stage 2: tree search for section detail ------
+        try:
+            tree_results = self.search_tree(
+                query, doc_ids, model=model, top_n=len(doc_ids)
+            )
+        except Exception as exc:
+            raise SearchError(f"Deep search Stage 2 failed: {exc}") from exc
+
+        # Build lookup: doc_id -> tree result
+        tree_map = {tr.doc_id: tr for tr in tree_results}
+
+        # ------ Combine scores and filter ------
+        from pageindex.retrieval.models import assign_confidence
+
+        combined: list[DeepSearchResult] = []
+        for doc_id in doc_ids:
+            tr = tree_map.get(doc_id)
+            if tr is None or not tr.sections:
+                # No relevant sections found -- filter out
+                continue
+
+            norm_s1 = norm_scores[doc_id]
+            tree_score = tr.score
+            # Geometric mean: both stages must contribute
+            combined_score = math.sqrt(norm_s1 * tree_score)
+
+            combined.append(DeepSearchResult(
+                doc_id=doc_id,
+                combined_score=round(combined_score, 6),
+                doc_score=doc_scores_map[doc_id],
+                tree_score=tree_score,
+                sections=tr.sections,
+                metadata=doc_metadata_map.get(doc_id, {}),
+                confidence=assign_confidence(combined_score, "deep_search"),
+            ))
+
+        # Sort by combined score descending
+        combined.sort(key=lambda r: r.combined_score, reverse=True)
+
+        elapsed = round(time.perf_counter() - t0, 3)
+        return DeepSearchResponse(
+            results=combined,
+            query=query,
+            stage1_count=stage1_count,
+            filtered_count=len(combined),
+            timing=elapsed,
+            strategy_used=stage1.strategy_used,
+        )
 
     # ------------------------------------------------------------------
     # Ingestion
@@ -623,24 +836,7 @@ class PageIndex:
             raise IngestionError(f"Ingestion failed: {exc}") from exc
 
     def _build_ingestion_config(self) -> dict:
-        """Convert ingestion settings to the dict format expected by the pipeline.
-
-        The tree-indexing stage expects a dict with ``config.yaml`` top-level
-        keys.  We include ``model`` so the user-specified LLM model is used
-        for tree indexing instead of the ``config.yaml`` default.
-
-        Only valid top-level ``config.yaml`` keys are safe here -- adding
-        nested keys like ``llm`` or ``retrieval`` would trigger
-        ``ConfigLoader._validate_keys()`` ValueError (Pitfall 1).
-
-        The LiteLLM provider prefix (``gemini/``) is stripped because tree
-        indexing calls the Google GenAI SDK directly, not via LiteLLM.
-        """
-        model = self._settings.llm.completion_model
-        # Strip LiteLLM provider prefix for direct GenAI SDK calls
-        if "/" in model:
-            model = model.split("/", 1)[1]
-        return {"model": model}
+        return {}
 
     # ------------------------------------------------------------------
     # Retrieval

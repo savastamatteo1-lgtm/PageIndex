@@ -6,9 +6,9 @@
 <br/>
 
 
-# PageIndex: Vectorless, Reasoning-based RAG
+# PageIndex: Structure-first, Reasoning-based RAG
 
-<p align="center"><b>Reasoning-based RAG&nbsp; ◦ &nbsp;No Vector DB&nbsp; ◦ &nbsp;No Chunking&nbsp; ◦ &nbsp;Human-like Retrieval</b></p>
+<p align="center"><b>Reasoning-based RAG&nbsp; ◦ &nbsp;Tree-aware Chunking&nbsp; ◦ &nbsp;Multi-strategy Retrieval&nbsp; ◦ &nbsp;Human-like Reasoning</b></p>
 
 <h4 align="center">
   <a href="https://discord.com/invite/VuXuf29EUj">💬 Discord</a>
@@ -21,7 +21,7 @@
 <summary><h3>📢 Latest Updates</h3></summary>
 
  **📝 Articles:**
-- **PageIndex Framework**: Introduces the PageIndex framework — an *agentic, in-context* *tree index* that enables LLMs to perform *reasoning-based*, *human-like retrieval* over long documents, without vector DB or chunking.
+- **PageIndex Framework**: Introduces the PageIndex framework — an *agentic, in-context* *tree index* that enables LLMs to perform *reasoning-based*, *human-like retrieval* over long documents. Unlike traditional RAG, PageIndex builds a hierarchical document structure first, then chunks at natural section boundaries and combines tree-based reasoning with vector search for multi-strategy retrieval.
 
 </details>
 
@@ -29,24 +29,25 @@
 
 # 📑 Introduction to PageIndex
 
-Are you frustrated with vector database retrieval accuracy for long professional documents? Traditional vector-based RAG relies on semantic *similarity* rather than true *relevance*. But **similarity ≠ relevance** — what we truly need in retrieval is **relevance**, and that requires **reasoning**. When working with professional documents that demand domain expertise and multi-step reasoning, similarity search often falls short.
+Are you frustrated with vector database retrieval accuracy for long professional documents? Traditional vector-based RAG relies on semantic *similarity* rather than true *relevance*. But **similarity ≠ relevance** — what we truly need in retrieval is **relevance**, and that requires **reasoning**. When working with professional documents that demand domain expertise and multi-step reasoning, similarity search alone often falls short.
 
-Inspired by AlphaGo, we propose **PageIndex** — a **vectorless**, **reasoning-based RAG** system that builds a **hierarchical tree index** from long documents and uses LLMs to **reason** *over that index* for **agentic, context-aware retrieval**.
-It simulates how *human experts* navigate and extract knowledge from complex documents through *tree search*, enabling LLMs to *think* and *reason* their way to the most relevant document sections. PageIndex performs retrieval in two steps:
+Inspired by AlphaGo, we propose **PageIndex** — a **structure-first**, **reasoning-based RAG** system that builds a **hierarchical tree index** from long documents and uses LLMs to **reason** *over that index* for **agentic, context-aware retrieval**.
+It simulates how *human experts* navigate and extract knowledge from complex documents through *tree search*, enabling LLMs to *think* and *reason* their way to the most relevant document sections. PageIndex performs retrieval in three steps:
 
 1. Generate a “Table-of-Contents” **tree structure index** of documents
-2. Perform reasoning-based retrieval through **tree search**
+2. **Chunk at tree-leaf boundaries** — preserving natural section structure instead of using arbitrary fixed-size windows
+3. Perform retrieval through **tree search, vector similarity, metadata filtering, or hybrid fusion** — selected automatically based on query intent
 
 
-### 🎯 Core Features 
+### 🎯 Core Features
 
 Compared to traditional vector-based RAG, **PageIndex** features:
-- **No Vector DB**: Uses document structure and LLM reasoning for retrieval, instead of vector similarity search.
-- **No Chunking**: Documents are organized into natural sections, not artificial chunks.
-- **Human-like Retrieval**: Simulates how human experts navigate and extract knowledge from complex documents.
+- **Tree-aware Chunking**: Documents are split at natural section boundaries derived from the tree structure — not arbitrary token windows. Each chunk retains its `node_id` and full tree path (e.g. `”Article 4 > Section 2 > Paragraph 3”`).
+- **Multi-strategy Retrieval**: Combines LLM-guided tree search, vector similarity (pgvector), metadata filtering, and Reciprocal Rank Fusion — with automatic strategy selection based on query intent.
+- **Human-like Reasoning**: Simulates how human experts navigate and extract knowledge from complex documents through tree search.
 - **Better Explainability and Traceability**: Retrieval is based on reasoning — traceable and interpretable, with page and section references. No more opaque, approximate vector search (“vibe retrieval”).
 
-PageIndex powers a reasoning-based RAG system that achieved **state-of-the-art** [98.7% accuracy](https://github.com/VectifyAI/Mafin2.5-FinanceBench) on FinanceBench, demonstrating superior performance over vector-based RAG solutions in professional document analysis.
+PageIndex powers a reasoning-based RAG system that achieved **state-of-the-art** [98.7% accuracy](https://github.com/VectifyAI/Mafin2.5-FinanceBench) on FinanceBench, demonstrating superior performance over traditional fixed-chunk RAG solutions in professional document analysis.
 
 ### 📍 Explore PageIndex
 
@@ -244,6 +245,7 @@ PageIndex supports four retrieval strategies. In `"auto"` mode (default), an LLM
 | `semantic` | Vector similarity search over chunk embeddings | "principio di proporzionalità nelle sanzioni" |
 | `hybrid` | Fuses metadata + semantic + description via Reciprocal Rank Fusion | Broad queries mixing structure and meaning |
 | `auto` | LLM-based intent classification → dispatches to above | General use (recommended) |
+| `deep` | Two-stage: document search → tree-based section filtering | When you need section-level detail |
 
 ```python
 # Automatic strategy selection (default)
@@ -260,6 +262,49 @@ results = pi.search_metadata("decreti legislativi 2023", limit=10)
 results = pi.search_description("riforma del processo penale", limit=5)
 results = pi.search_tree("clausola di salvaguardia", doc_ids=["uuid-1", "uuid-2"])
 ```
+
+### Deep Search
+
+`search_deep()` chains document discovery with section-level tree analysis in a single call. Stage 1 runs `search()` to find candidate documents; Stage 2 runs `search_tree()` on each candidate to identify relevant sections. Documents with no matching sections are filtered out.
+
+```python
+resp = pi.search_deep("sentenze penali 2023")
+
+print(resp.stage1_count)    # e.g. 10 candidates from Stage 1
+print(resp.filtered_count)  # e.g. 4 after tree filtering
+print(resp.timing)          # total seconds for both stages
+
+for r in resp.results:
+    print(r.doc_id, r.combined_score, r.confidence)
+    for s in r.sections:
+        print(f"  {s['title']} (pp. {s['start_page']}-{s['end_page']})")
+```
+
+**Method signature:**
+
+```python
+pi.search_deep(
+    query: str,
+    *,
+    strategy: str | None = None,  # Stage 1 strategy (default: "auto")
+    limit: int | None = None,     # Stage 1 result cap
+    model: str | None = None,     # LLM for Stage 2 tree search
+) -> DeepSearchResponse
+```
+
+Each `DeepSearchResult` contains:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `doc_id` | `str` | Document UUID |
+| `combined_score` | `float` | Geometric mean of normalised Stage 1 and tree scores |
+| `doc_score` | `float` | Raw Stage 1 score |
+| `tree_score` | `float` | Fraction of tree nodes found relevant |
+| `sections` | `list[dict]` | Matched sections with `title`, `start_page`, `end_page`, `node_id` |
+| `metadata` | `dict` | Full document metadata |
+| `confidence` | `str` | `"high"` / `"medium"` / `"low"` |
+
+Scores are combined using a geometric mean (`sqrt(stage1 * tree)`), which ensures a document must be relevant at both the document level *and* the section level to rank high.
 
 ### Configuration
 
@@ -397,7 +442,7 @@ pageindex/
 Please cite this work as:
 ```
 Mingtian Zhang, Yu Tang and PageIndex Team,
-"PageIndex: Next-Generation Vectorless, Reasoning-based RAG",
+"PageIndex: Structure-first, Reasoning-based RAG",
 PageIndex Blog, Sep 2025.
 ```
 
@@ -406,7 +451,7 @@ Or use the BibTeX citation:
 ```
 @article{zhang2025pageindex,
   author = {Mingtian Zhang and Yu Tang and PageIndex Team},
-  title = {PageIndex: Next-Generation Vectorless, Reasoning-based RAG},
+  title = {PageIndex: Structure-first, Reasoning-based RAG},
   journal = {PageIndex Blog},
   year = {2025},
   month = {September},
