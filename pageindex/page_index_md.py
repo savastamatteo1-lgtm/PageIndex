@@ -16,22 +16,32 @@ import json
 import re
 import os
 try:
-    from .utils import *
-except:
-    from utils import *
+    from .utils import (
+        count_tokens, structure_to_list, write_node_id,
+        create_clean_structure_for_description, format_structure,
+        print_json, print_toc,
+    )
+    from .page_index import generate_node_summary, generate_doc_description
+except ImportError:
+    from utils import (
+        count_tokens, structure_to_list, write_node_id,
+        create_clean_structure_for_description, format_structure,
+        print_json, print_toc,
+    )
+    from page_index import generate_node_summary, generate_doc_description
 
-async def get_node_summary(node, summary_token_threshold=200, model=None):
+async def get_node_summary(node, summary_token_threshold=200, provider=None, model=None):
     node_text = node.get('text')
     num_tokens = count_tokens(node_text, model=model)
     if num_tokens < summary_token_threshold:
         return node_text
     else:
-        return await generate_node_summary(node, model=model)
+        return await generate_node_summary(node, provider, model=model)
 
 
-async def generate_summaries_for_structure_md(structure, summary_token_threshold, model=None):
+async def generate_summaries_for_structure_md(structure, summary_token_threshold, provider=None, model=None):
     nodes = structure_to_list(structure)
-    tasks = [get_node_summary(node, summary_token_threshold=summary_token_threshold, model=model) for node in nodes]
+    tasks = [get_node_summary(node, summary_token_threshold=summary_token_threshold, provider=provider, model=model) for node in nodes]
     summaries = await asyncio.gather(*tasks)
     
     for node, summary in zip(nodes, summaries):
@@ -253,10 +263,16 @@ def clean_tree_for_output(tree_nodes):
     return cleaned_nodes
 
 
-async def md_to_tree(md_path, if_thinning=False, min_token_threshold=None, if_add_node_summary='no', summary_token_threshold=None, model=None, if_add_doc_description='no', if_add_node_text='no', if_add_node_id='yes'):
+async def md_to_tree(md_path, if_thinning=False, min_token_threshold=None, if_add_node_summary='no', summary_token_threshold=None, model=None, if_add_doc_description='no', if_add_node_text='no', if_add_node_id='yes', provider=None):
     with open(md_path, 'r', encoding='utf-8') as f:
         markdown_content = f.read()
-    
+
+    if provider is None:
+        from pageindex.llm.provider import get_provider
+        provider = get_provider()
+    if model is None:
+        model = provider.tree_indexing_model
+
     print(f"Extracting nodes from markdown...")
     node_list, markdown_lines = extract_nodes_from_markdown(markdown_content)
 
@@ -281,7 +297,7 @@ async def md_to_tree(md_path, if_thinning=False, min_token_threshold=None, if_ad
         tree_structure = format_structure(tree_structure, order = ['title', 'node_id', 'summary', 'prefix_summary', 'text', 'line_num', 'nodes'])
         
         print(f"Generating summaries for each node...")
-        tree_structure = await generate_summaries_for_structure_md(tree_structure, summary_token_threshold=summary_token_threshold, model=model)
+        tree_structure = await generate_summaries_for_structure_md(tree_structure, summary_token_threshold=summary_token_threshold, provider=provider, model=model)
         
         if if_add_node_text == 'no':
             # Remove text after summary generation if not requested
@@ -291,7 +307,7 @@ async def md_to_tree(md_path, if_thinning=False, min_token_threshold=None, if_ad
             print(f"Generating document description...")
             # Create a clean structure without unnecessary fields for description generation
             clean_structure = create_clean_structure_for_description(tree_structure)
-            doc_description = generate_doc_description(clean_structure, model=model)
+            doc_description = generate_doc_description(clean_structure, provider, model=model)
             return {
                 'doc_name': os.path.splitext(os.path.basename(md_path))[0],
                 'doc_description': doc_description,
@@ -319,7 +335,7 @@ if __name__ == "__main__":
     MD_PATH = os.path.join(os.path.dirname(__file__), '..', 'tests/markdowns/', f'{MD_NAME}.md')
 
 
-    MODEL="gemini-3.1-pro-preview"
+    MODEL=None
     IF_THINNING=False
     THINNING_THRESHOLD=5000
     SUMMARY_TOKEN_THRESHOLD=200

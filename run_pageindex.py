@@ -34,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument('--pdf_path', type=str, help='Path to the PDF file')
     parser.add_argument('--md_path', type=str, help='Path to the Markdown file')
 
-    parser.add_argument('--model', type=str, default='gemini-3.1-pro-preview', help='Model to use')
+    parser.add_argument('--model', type=str, default=None, help='Model to use')
 
     parser.add_argument('--toc-check-pages', type=int, default=20,
                       help='Number of pages to check for table of contents (PDF only)')
@@ -74,10 +74,18 @@ if __name__ == "__main__":
         if not os.path.isfile(args.pdf_path):
             raise ValueError(f"PDF file not found: {args.pdf_path}")
 
+        # Build provider if model override specified
+        provider = None
+        if args.model:
+            from pageindex.llm.provider import LLMProvider
+            from pageindex.llm.config import load_llm_config
+            cfg = load_llm_config()
+            cfg['tree_indexing_model'] = args.model
+            provider = LLMProvider(cfg)
+
         # Process PDF file
         # Configure options
         opt = config(
-            model=args.model,
             toc_check_page_num=args.toc_check_pages,
             max_page_num_each_node=args.max_pages_per_node,
             max_token_num_each_node=args.max_tokens_per_node,
@@ -88,7 +96,7 @@ if __name__ == "__main__":
         )
 
         # Process the PDF
-        toc_with_page_number = page_index_main(args.pdf_path, opt)
+        toc_with_page_number = page_index_main(args.pdf_path, opt, provider=provider)
         print('Parsing done, saving to file...')
 
         # Save results
@@ -112,12 +120,20 @@ if __name__ == "__main__":
         # Process markdown file
         print('Processing markdown file...')
 
+        # Build provider if model override specified
+        provider = None
+        if args.model:
+            from pageindex.llm.provider import LLMProvider
+            from pageindex.llm.config import load_llm_config
+            cfg = load_llm_config()
+            cfg['tree_indexing_model'] = args.model
+            provider = LLMProvider(cfg)
+
         # Use ConfigLoader to get consistent defaults (matching PDF behavior)
         config_loader = ConfigLoader()
 
         # Create options dict with user args
         user_opt = {
-            'model': args.model,
             'if_add_node_summary': args.if_add_node_summary,
             'if_add_doc_description': args.if_add_doc_description,
             'if_add_node_text': args.if_add_node_text,
@@ -133,10 +149,11 @@ if __name__ == "__main__":
             min_token_threshold=args.thinning_threshold,
             if_add_node_summary=opt.if_add_node_summary,
             summary_token_threshold=args.summary_token_threshold,
-            model=opt.model,
+            model=args.model,
             if_add_doc_description=opt.if_add_doc_description,
             if_add_node_text=opt.if_add_node_text,
-            if_add_node_id=opt.if_add_node_id
+            if_add_node_id=opt.if_add_node_id,
+            provider=provider
         ))
 
         print('Parsing done, saving to file...')

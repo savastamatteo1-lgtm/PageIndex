@@ -29,31 +29,63 @@ class LLMProvider:
         self.embedding_model: str = config["embedding_model"]
         self.embedding_dimensions: int = config.get("embedding_dimensions", 768)
         self.temperature: float = config.get("temperature", 0)
+        self.tree_indexing_model: str = config.get("tree_indexing_model") or self.completion_model
+        self.num_retries: int = config.get("num_retries", 10)
 
     # ------------------------------------------------------------------
     # Completion
     # ------------------------------------------------------------------
 
-    def complete(self, messages: list[dict], **kwargs) -> str:
+    def complete(self, messages: list[dict], *, model: str | None = None, **kwargs) -> str:
         """Synchronous completion call.
 
         Returns the assistant message content as a plain string.
         """
+        effective_model = model or self.completion_model
         response = litellm.completion(
-            model=self.completion_model,
+            model=effective_model,
             messages=messages,
             temperature=kwargs.get("temperature", self.temperature),
+            num_retries=kwargs.get("num_retries", self.num_retries),
         )
         return response.choices[0].message.content
 
-    async def acomplete(self, messages: list[dict], **kwargs) -> str:
+    async def acomplete(self, messages: list[dict], *, model: str | None = None, **kwargs) -> str:
         """Asynchronous completion call."""
+        effective_model = model or self.completion_model
         response = await litellm.acompletion(
-            model=self.completion_model,
+            model=effective_model,
             messages=messages,
             temperature=kwargs.get("temperature", self.temperature),
+            num_retries=kwargs.get("num_retries", self.num_retries),
         )
         return response.choices[0].message.content
+
+    def complete_with_finish_reason(self, messages: list[dict], *, model: str | None = None, **kwargs) -> tuple[str, str]:
+        """Return (text, finish_reason) where finish_reason is 'finished' or 'max_output_reached'."""
+        response = litellm.completion(
+            model=model or self.completion_model,
+            messages=messages,
+            temperature=kwargs.get("temperature", self.temperature),
+            num_retries=kwargs.get("num_retries", self.num_retries),
+        )
+        text = response.choices[0].message.content
+        raw_reason = response.choices[0].finish_reason  # "stop" or "length"
+        reason = "max_output_reached" if raw_reason == "length" else "finished"
+        return text, reason
+
+    async def acomplete_with_finish_reason(self, messages: list[dict], *, model: str | None = None, **kwargs) -> tuple[str, str]:
+        """Async version of complete_with_finish_reason."""
+        response = await litellm.acompletion(
+            model=model or self.completion_model,
+            messages=messages,
+            temperature=kwargs.get("temperature", self.temperature),
+            num_retries=kwargs.get("num_retries", self.num_retries),
+        )
+        text = response.choices[0].message.content
+        raw_reason = response.choices[0].finish_reason
+        reason = "max_output_reached" if raw_reason == "length" else "finished"
+        return text, reason
 
     # ------------------------------------------------------------------
     # Embedding

@@ -1,8 +1,6 @@
-"""PageIndex utility functions for tree indexing and LLM interaction.
+"""PageIndex utility functions for tree indexing, PDF processing, and structure manipulation.
 
-Legacy functions (``Gemini_API``, ``ChatGPT_API``, ``Gemini_API_async``, etc.)
-are preserved for backward compatibility with ``page_index.py`` and
-``page_index_md.py``.
+All LLM interaction is handled by :mod:`pageindex.llm.provider`.
 
 **New code should use the PageIndex class API** for search, ingestion, and
 retrieval operations::
@@ -14,7 +12,6 @@ retrieval operations::
 import logging
 import os
 from datetime import datetime
-import time
 import json
 import PyPDF2
 import copy
@@ -23,142 +20,15 @@ import pymupdf
 from io import BytesIO
 from dotenv import load_dotenv
 load_dotenv()
-import logging
 import yaml
 from pathlib import Path
 from types import SimpleNamespace as config
 
-_gemini_client = None
-
-
-def _get_gemini_client():
-    """Return the google-genai client, creating it lazily on first call."""
-    global _gemini_client
-    if _gemini_client is None:
-        from google import genai
-        api_key = os.getenv("GOOGLE_API_KEY")
-        _gemini_client = genai.Client(api_key=api_key)
-    return _gemini_client
-
-
 def count_tokens(text, model=None):
-    """Count tokens for *text*.
-
-    Attempts to use the LLM abstraction layer (LiteLLM) first.  Falls back
-    to the direct google-genai SDK if the provider is unavailable.
-    """
     if not text:
         return 0
-    try:
-        from pageindex.llm.provider import get_provider
-        provider = get_provider()
-        return provider.count_tokens(text, model=model)
-    except Exception:
-        # Fallback to direct google-genai SDK
-        result = _get_gemini_client().models.count_tokens(
-            model=model or "gemini-3.1-pro-preview",
-            contents=text,
-        )
-        return result.total_tokens
-
-
-def _build_gemini_contents(chat_history, prompt):
-    """Convert OpenAI-style chat history + prompt into Gemini Content objects."""
-    from google.genai import types
-    contents = []
-    if chat_history:
-        for msg in chat_history:
-            role = "model" if msg["role"] == "assistant" else msg["role"]
-            contents.append(
-                types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])])
-            )
-    contents.append(
-        types.Content(role="user", parts=[types.Part.from_text(text=prompt)])
-    )
-    return contents
-
-
-def Gemini_API_with_finish_reason(model, prompt, api_key=None, chat_history=None):
-    from google.genai import types
-    max_retries = 10
-    from google import genai
-    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
-    for i in range(max_retries):
-        try:
-            contents = _build_gemini_contents(chat_history, prompt)
-            response = client.models.generate_content(
-                model=model,
-                contents=contents,
-                config=types.GenerateContentConfig(temperature=0),
-            )
-            finish_reason = response.candidates[0].finish_reason
-            if finish_reason == "MAX_TOKENS":
-                return response.text, "max_output_reached"
-            else:
-                return response.text, "finished"
-
-        except Exception as e:
-            print('************* Retrying *************')
-            logging.error(f"Error: {e}")
-            if i < max_retries - 1:
-                time.sleep(1)
-            else:
-                logging.error('Max retries reached for prompt: ' + prompt)
-                return "Error"
-
-ChatGPT_API_with_finish_reason = Gemini_API_with_finish_reason
-
-
-def Gemini_API(model, prompt, api_key=None, chat_history=None):
-    from google.genai import types
-    max_retries = 10
-    from google import genai
-    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
-    for i in range(max_retries):
-        try:
-            contents = _build_gemini_contents(chat_history, prompt)
-            response = client.models.generate_content(
-                model=model,
-                contents=contents,
-                config=types.GenerateContentConfig(temperature=0),
-            )
-            return response.text
-        except Exception as e:
-            print('************* Retrying *************')
-            logging.error(f"Error: {e}")
-            if i < max_retries - 1:
-                time.sleep(1)
-            else:
-                logging.error('Max retries reached for prompt: ' + prompt)
-                return "Error"
-
-ChatGPT_API = Gemini_API
-
-
-async def Gemini_API_async(model, prompt, api_key=None):
-    max_retries = 10
-    from google import genai
-    from google.genai import types
-    client = genai.Client(api_key=api_key) if api_key else _get_gemini_client()
-    contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt)])]
-    for i in range(max_retries):
-        try:
-            response = await client.aio.models.generate_content(
-                model=model,
-                contents=contents,
-                config=types.GenerateContentConfig(temperature=0),
-            )
-            return response.text
-        except Exception as e:
-            print('************* Retrying *************')
-            logging.error(f"Error: {e}")
-            if i < max_retries - 1:
-                await asyncio.sleep(1)
-            else:
-                logging.error('Max retries reached for prompt: ' + prompt)
-                return "Error"
-
-ChatGPT_API_async = Gemini_API_async
+    from pageindex.llm.provider import get_provider
+    return get_provider().count_tokens(text, model=model)
 
 
 def get_json_content(response):
@@ -654,27 +524,6 @@ def add_node_text_with_labels(node, pdf_pages):
     return
 
 
-async def generate_node_summary(node, model=None):
-    prompt = f"""You are given a part of a document, your task is to generate a description of the partial document about what are main points covered in the partial document.
-
-    Partial Document Text: {node['text']}
-    
-    Directly return the description, do not include any other text.
-    """
-    response = await ChatGPT_API_async(model, prompt)
-    return response
-
-
-async def generate_summaries_for_structure(structure, model=None):
-    nodes = structure_to_list(structure)
-    tasks = [generate_node_summary(node, model=model) for node in nodes]
-    summaries = await asyncio.gather(*tasks)
-    
-    for node, summary in zip(nodes, summaries):
-        node['summary'] = summary
-    return structure
-
-
 def create_clean_structure_for_description(structure):
     """
     Create a clean structure for document description generation,
@@ -696,18 +545,6 @@ def create_clean_structure_for_description(structure):
         return [create_clean_structure_for_description(item) for item in structure]
     else:
         return structure
-
-
-def generate_doc_description(structure, model=None):
-    prompt = f"""Your are an expert in generating descriptions for a document.
-    You are given a structure of a document. Your task is to generate a one-sentence description for the document, which makes it easy to distinguish the document from other documents.
-        
-    Document Structure: {structure}
-    
-    Directly return the description, do not include any other text.
-    """
-    response = ChatGPT_API(model, prompt)
-    return response
 
 
 def reorder_dict(data, key_order):

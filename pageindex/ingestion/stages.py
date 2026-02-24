@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def stage_tree_index(pipeline: DocumentPipeline, config: dict) -> None:
+def stage_tree_index(pipeline: DocumentPipeline, config: dict, llm_provider: LLMProvider) -> None:
     """Build the hierarchical tree structure for a PDF document.
 
     Calls ``page_index_main`` with forced options for node IDs, node text,
@@ -58,7 +58,9 @@ def stage_tree_index(pipeline: DocumentPipeline, config: dict) -> None:
         Mutable pipeline state.  Must have ``pdf_path`` set.
     config : dict
         Optional overrides for the tree-indexing config.  Keys must be valid
-        ``config.yaml`` top-level keys (e.g. ``model``, ``max_page_num_each_node``).
+        ``config.yaml`` top-level keys (e.g. ``max_page_num_each_node``).
+    llm_provider : LLMProvider
+        LLM provider for tree indexing calls.
     """
     from pageindex.page_index import page_index_main
 
@@ -71,7 +73,7 @@ def stage_tree_index(pipeline: DocumentPipeline, config: dict) -> None:
     merged = {**config, **ingestion_overrides}
 
     opts = ConfigLoader().load(merged)
-    result = page_index_main(pipeline.pdf_path, opt=opts)
+    result = page_index_main(pipeline.pdf_path, opt=opts, provider=llm_provider)
 
     pipeline.tree_json = result["structure"]
     pipeline.doc_name = result["doc_name"]
@@ -463,7 +465,7 @@ def process_single_document(
         update_document(pipeline.doc_id, {"additional_fields": additional_fields})
 
     # Stage 1: Tree indexing
-    stage_tree_index(pipeline, config)
+    stage_tree_index(pipeline, config, llm_provider=llm_provider)
 
     # Stage 2: Metadata extraction
     stage_extract_metadata(pipeline, llm_provider, metadata_pages=metadata_pages)
